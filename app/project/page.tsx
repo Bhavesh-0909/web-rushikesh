@@ -1,9 +1,8 @@
-import React from 'react'
+import type { Metadata } from "next"
+import ClientProjectsPage from "./client-page"
 
-function page() {
-  return (
-    <div>page</div>
-  )
+export const metadata: Metadata = { title: "Projects" }
+
+export default function ProjectsPage() {
+  return <ClientProjectsPage />
 }
-
-export default page

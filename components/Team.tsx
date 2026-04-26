@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { teamData } from '../data/home.data';
+import { teamData } from '../app/data/home.data';
 
 export const Team = () => {
   const [showAll, setShowAll] = useState(false);

@@ -1,4 +1,4 @@
-import { prisma } from '@/app/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import StudioClient from './StudioClient'
 
 export default async function Page() {

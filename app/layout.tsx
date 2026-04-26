@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "./components/Navbar";
-import { Footer } from "./components/Footer";
-import { CustomCursor } from "./components/CustomCursor";
-import { SmoothScroll } from "./components/SmoothScroll";
+import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/Footer";
+import { CustomCursor } from "../components/CustomCursor";
+import { SmoothScroll } from "../components/SmoothScroll";
+import { cn } from "@/lib/utils";
 
 // 1. Configure your custom fonts
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -33,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} ${playfair.variable} antialiased`}>
+    <html lang="en" className={cn("antialiased", spaceGrotesk.variable, playfair.variable, "font-sans", inter.variable)}>
       <body className="relative min-h-screen flex flex-col text-brand-text overflow-x-hidden selection:bg-brand-green selection:text-white bg-brand-background">
         <SmoothScroll>
           <CustomCursor />

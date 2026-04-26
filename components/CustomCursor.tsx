@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react'; // Requires: npm install @gsap/react
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 
 export const CustomCursor = () => {
   const dotRef = useRef<HTMLDivElement>(null);

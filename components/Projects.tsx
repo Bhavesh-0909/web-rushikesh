@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Briefcase, Award, Users } from 'lucide-react';
-import { projects } from '../data/home.data';
-import { cn } from '../lib/utils';
+import { projects } from '../app/data/home.data';
+import { cn } from '@/lib/utils';
 
 export const Projects = () => {
   const [showAll, setShowAll] = useState(false);

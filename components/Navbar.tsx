@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 
 const ScaleIcon = ({ isOpen }: { isOpen: boolean }) => (
   <motion.svg 
@@ -40,11 +40,11 @@ export const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "The Studio", href: isHomePage ? "#about" : "/#about" },
-    { name: "Portfolio", href: isHomePage ? "#projects" : "/#projects" },
-    { name: "Gallery", href: "/studio" },
-    { name: "Team", href: isHomePage ? "#team" : "/#team" },
-    { name: "Contact", href: isHomePage ? "#contact" : "/#contact" }
+    { name: "The Studio", href: isHomePage ? "#about" : "/about" },
+    { name: "Portfolio", href: isHomePage ? "#projects" : "/project" },
+    { name: "Gallery", href: "/gallery" },
+    { name: "Team", href: isHomePage ? "#team" : "/team" },
+    { name: "Contact", href: isHomePage ? "#contact" : "/contact" }
   ];
 
   return (
