@@ -1,16 +1,9 @@
-import { Studio } from "../components/page/StudioPage"
+import { prisma } from '@/app/lib/prisma'
+import StudioClient from './StudioClient'
 
-import { prisma } from "../lib/prisma";
+export default async function Page() {
+  const images = await prisma.images.findMany()
+  const studioImages = images.map((item) => item.url)
 
-const getImages = async () => {
-  const posts = await prisma.images.findMany().then((res: any) => res.map((item: any) => item.url));
-  return posts;
+  return <StudioClient studioImages={studioImages} />
 }
-async function page() {
-  const studioImages = await getImages();
-  return (
-    <Studio studioImages={studioImages} />
-  )
-}
-
-export default page

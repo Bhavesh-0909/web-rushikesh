@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 
 
-export const Studio = ({studioImages}: {studioImages: string[]}) => {
+const StudioClient = ({studioImages}: {studioImages: string[]}) => {
   return (
     <main className="min-h-screen bg-brand-background pt-32 pb-24 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
@@ -45,3 +45,5 @@ export const Studio = ({studioImages}: {studioImages: string[]}) => {
     </main>
   );
 };
+
+export default StudioClient;
