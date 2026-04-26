@@ -23,25 +23,38 @@ const C = {
   edgeGreenDim: '#1aaa52',
 };
 
+// ─── TYPES ────────────────────────────────────────────────────────────────
+type Vector3Array = [number, number, number];
+
+interface ElementDescriptor {
+  id: string;
+  pos: Vector3Array;
+  scale: Vector3Array;
+  phase: number;
+  from: 'top' | 'left' | 'right' | 'front' | 'back' | 'grow';
+  intro: boolean;
+  green: boolean;
+}
+
 // ─── MOBILE LAYOUT CONSTANTS ─────────────────────────────────────────────
 const W    = 8;     // half-width  (desktop was 17)
 const D    = 5;     // half-depth  (desktop was 11)
 const FH   = 4.5;   // floor height (desktop was 5.2)
 
-const slabY = n => n * FH - 0.1;
-const wallY = n => n * FH + 2.5;
-const furY  = n => n * FH + 0.13;
+const slabY = (n: number) => n * FH - 0.1;
+const wallY = (n: number) => n * FH + 2.5;
+const furY  = (n: number) => n * FH + 0.13;
 
 // ─── PRIMITIVE BUILDERS ───────────────────────────────────────────────────
 
-function slab(id, n, phase, intro) {
+function slab(id: string, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = slabY(n);
   return [
     { id:`${id}_c`, pos:[0, y, 0], scale:[W*2, 0.25, D*2], phase, from:'top', intro, green:false },
   ];
 }
 
-function outerWalls(id, n, phase, intro) {
+function outerWalls(id: string, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = wallY(n);
   return [
     { id:`${id}_f`, pos:[0,  y,  D], scale:[W*2, 5, 0.25], phase,        from:'front', intro, green:false },
@@ -51,7 +64,7 @@ function outerWalls(id, n, phase, intro) {
   ];
 }
 
-function columns(id, n, phase, intro) {
+function columns(id: string, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = wallY(n);
   return [
     { id:`${id}_fl`, pos:[-W, y, -D], scale:[0.45,5,0.45], phase, from:'grow', intro, green:false },
@@ -62,13 +75,13 @@ function columns(id, n, phase, intro) {
 }
 
 // Window: frame + cross bars — all green
-function window3(id, pos, w, h, axis, phase, intro) {
+function window3(id: string, pos: Vector3Array, w: number, h: number, axis: 'x' | 'y' | 'z', phase: number, intro: boolean): ElementDescriptor[] {
   const depth = 0.22;
   const [px, py, pz] = pos;
   const isX = axis === 'x';
-  const frameScale = isX ? [depth, h, w] : [w, h, depth];
-  const hBarScale  = isX ? [depth+0.05, 0.1, w*0.92] : [w*0.92, 0.1, depth+0.05];
-  const vBarScale  = isX ? [depth+0.05, h*0.88, 0.1] : [0.1, h*0.88, depth+0.05];
+  const frameScale: Vector3Array = isX ? [depth, h, w] : [w, h, depth];
+  const hBarScale: Vector3Array  = isX ? [depth+0.05, 0.1, w*0.92] : [w*0.92, 0.1, depth+0.05];
+  const vBarScale: Vector3Array  = isX ? [depth+0.05, h*0.88, 0.1] : [0.1, h*0.88, depth+0.05];
   return [
     { id:`${id}_frame`, pos:[px,py,pz], scale:frameScale,  phase,           from: isX?'right':'front', intro, green:true },
     { id:`${id}_hbar`,  pos:[px,py,pz], scale:hBarScale,   phase:phase+0.01, from:'grow', intro, green:true },
@@ -78,7 +91,7 @@ function window3(id, pos, w, h, axis, phase, intro) {
 
 // ─── LIGHT FURNITURE (fewer pieces, same primitives) ──────────────────────
 
-function chair(id, cx, fz, n, phase, intro) {
+function chair(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_seat`, pos:[cx, y+0.55, fz],      scale:[0.9,0.10,0.8],  phase,        from:'grow', intro, green:true },
@@ -90,7 +103,7 @@ function chair(id, cx, fz, n, phase, intro) {
   ];
 }
 
-function table(id, cx, fz, n, phase, intro) {
+function table(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_top`, pos:[cx, y+0.85, fz],          scale:[1.8,0.10,1.0],  phase,        from:'grow', intro, green:true },
@@ -101,7 +114,7 @@ function table(id, cx, fz, n, phase, intro) {
   ];
 }
 
-function tv(id, cx, fz, n, phase, intro) {
+function tv(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_scr`,  pos:[cx, y+1.8, fz],  scale:[2.0,1.3,0.10], phase,        from:'grow', intro, green:true },
@@ -110,7 +123,7 @@ function tv(id, cx, fz, n, phase, intro) {
   ];
 }
 
-function sofa(id, cx, fz, n, phase, intro) {
+function sofa(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_seat`,  pos:[cx, y+0.42, fz],       scale:[2.2,0.28,0.9],  phase,        from:'grow', intro, green:true },
@@ -120,7 +133,7 @@ function sofa(id, cx, fz, n, phase, intro) {
   ];
 }
 
-function shelf(id, cx, fz, n, phase, intro) {
+function shelf(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_body`, pos:[cx, y+1.0, fz],  scale:[1.2,2.0,0.3],   phase,        from:'grow', intro, green:true },
@@ -130,7 +143,7 @@ function shelf(id, cx, fz, n, phase, intro) {
   ];
 }
 
-function photoFrame(id, cx, wy, fz, phase, intro) {
+function photoFrame(id: string, cx: number, wy: number, fz: number, phase: number, intro: boolean): ElementDescriptor[] {
   return [
     { id:`${id}_frame`, pos:[cx, wy+0.5, fz], scale:[0.7,1.0,0.07], phase,        from:'grow', intro, green:true },
     { id:`${id}_inner`, pos:[cx, wy+0.5, fz], scale:[0.5,0.7,0.09], phase:phase+0.01, from:'grow', intro, green:true },
@@ -138,7 +151,7 @@ function photoFrame(id, cx, wy, fz, phase, intro) {
 }
 
 // ─── ELEMENTS ─────────────────────────────────────────────────────────────
-const ELEMENTS = [
+const ELEMENTS: ElementDescriptor[] = [
 
   // ══════════════════════════════════════════════════════════════════
   //  GROUND FLOOR  (auto-play 0 → 0.30)
@@ -261,7 +274,7 @@ const ELEMENTS = [
 // ─── TRAVEL DISTANCE ──────────────────────────────────────────────────────
 const TRAVEL = 40;   // reduced from 60 — pieces don't fly as far on small screen
 
-function startPos(el) {
+function startPos(el: ElementDescriptor): Vector3Array {
   const [x,y,z] = el.pos;
   switch(el.from) {
     case 'top':   return [x, y+TRAVEL, z];
@@ -279,9 +292,9 @@ function Grid() {
 }
 
 // ─── PIECE ───────────────────────────────────────────────────────────────
-function Piece({ data, progRef }) {
-  const meshRef = useRef(null);
-  const edgeRef = useRef(null);
+function Piece({ data, progRef }: { data: ElementDescriptor, progRef: React.MutableRefObject<number> }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const edgeRef = useRef<THREE.LineSegments>(null);
   const sp0     = useMemo(() => startPos(data), [data]);
 
   const [w,h,d] = data.scale;
@@ -312,7 +325,7 @@ function Piece({ data, progRef }) {
     }
 
     if (meshRef.current.material) {
-      meshRef.current.material.opacity = e * (data.green ? 0.06 : 0.28);
+      (meshRef.current.material as THREE.MeshStandardMaterial).opacity = e * (data.green ? 0.06 : 0.28);
     }
 
     if (edgeRef.current?.material) {
@@ -322,8 +335,8 @@ function Piece({ data, progRef }) {
         new THREE.Color(flashEdge),
         fresh
       );
-      edgeRef.current.material.color.copy(col);
-      edgeRef.current.material.opacity = e * (data.green
+      (edgeRef.current.material as THREE.LineBasicMaterial).color.copy(col);
+      (edgeRef.current.material as THREE.LineBasicMaterial).opacity = e * (data.green
         ? 0.72 + fresh*0.28
         : 0.22 + fresh*0.60
       );
@@ -331,7 +344,7 @@ function Piece({ data, progRef }) {
   });
 
   return (
-    <mesh ref={meshRef} position={sp0}>
+    <mesh ref={meshRef} position={sp0 as [number, number, number]}>
       <primitive object={boxGeo} attach="geometry" />
       <meshStandardMaterial
         color={C.fill}
@@ -348,7 +361,7 @@ function Piece({ data, progRef }) {
 
 // ─── ANNOTATION DOTS ─────────────────────────────────────────────────────
 function Dots() {
-  const pts = [
+  const pts: Vector3Array[] = [
     [-W,0,D],[ W,0,D],[-W,0,-D],[ W,0,-D],
     [-W,slabY(1),D],[ W,slabY(1),D],
     [-W,slabY(2),D],[ W,slabY(2),D],
@@ -366,19 +379,19 @@ function Dots() {
 }
 
 // ─── FLOOR LEVEL LINES ────────────────────────────────────────────────────
-function FloorLines({ progRef }) {
+function FloorLines({ progRef }: { progRef: React.MutableRefObject<number> }) {
   const FLOORS = [
     { y:slabY(0), t:0.10 },
     { y:slabY(1), t:0.42 },
     { y:slabY(2), t:0.62 },
     { y:slabY(3), t:0.80 },
   ];
-  const refs = FLOORS.map(() => useRef(null));
+  const refs = FLOORS.map(() => useRef<any>(null));
 
   useFrame(() => {
     FLOORS.forEach((f,i) => {
       const a = THREE.MathUtils.clamp((progRef.current - f.t)/0.06, 0, 1);
-      if (refs[i].current?.material) refs[i].current.material.opacity = a * 0.45;
+      if (refs[i].current?.material) (refs[i].current.material as THREE.LineBasicMaterial).opacity = a * 0.45;
     });
   });
 
@@ -398,10 +411,10 @@ function FloorLines({ progRef }) {
 const INTRO_MS = 2600;
 
 function Scene() {
-  const groupRef    = useRef(null);
+  const groupRef    = useRef<THREE.Group>(null);
   const gyroRef     = useRef({ x: 0, y: 0 });   // device tilt for parallax
 
-  const introStart  = useRef(null);
+  const introStart  = useRef<number | null>(null);
   const introDone   = useRef(false);
   const introRaw    = useRef(0);
   const scrollRaw   = useRef(0);
@@ -418,7 +431,7 @@ function Scene() {
     window.addEventListener('scroll', onScroll, { passive: true });
 
     // Gyroscope tilt — subtle parallax on mobile
-    const onGyro = e => {
+    const onGyro = (e: DeviceOrientationEvent) => {
       // gamma = left/right tilt (-90→90), beta = fwd/back tilt
       gyroRef.current.x = THREE.MathUtils.clamp((e.gamma || 0) / 45, -1, 1);
       gyroRef.current.y = THREE.MathUtils.clamp(((e.beta || 0) - 45) / 45, -1, 1);

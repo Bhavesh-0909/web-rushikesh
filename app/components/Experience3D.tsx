@@ -22,17 +22,30 @@ const C = {
   edgeGreenDim:'#1aaa52',       // slightly dimmer green for furniture
 };
 
+// ─── TYPES ────────────────────────────────────────────────────────────────
+type Vector3Array = [number, number, number];
+
+interface ElementDescriptor {
+  id: string;
+  pos: Vector3Array;
+  scale: Vector3Array;
+  phase: number;
+  from: 'top' | 'left' | 'right' | 'front' | 'back' | 'grow';
+  intro: boolean;
+  green: boolean;
+}
+
 // ─── FLOOR LAYOUT HELPERS ─────────────────────────────────────────────────
 const FH    = 5.2;                         // floor-to-floor height
-const slabY = n => n * FH - 0.1;          // slab top-face Y
-const wallY = n => n * FH + 2.5;          // wall mid Y
-const furY  = n => n * FH + 0.13;         // furniture sits on slab
+const slabY = (n: number) => n * FH - 0.1;          // slab top-face Y
+const wallY = (n: number) => n * FH + 2.5;          // wall mid Y
+const furY  = (n: number) => n * FH + 0.13;         // furniture sits on slab
 
 // ─── PRIMITIVE BUILDERS ───────────────────────────────────────────────────
 // Each returns an array of element descriptors {pos,scale,phase,from,green}
 // green=true → uses edgeGreen instead of edgeFaint
 
-function slab(id, n, phase, intro) {
+function slab(id: string, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = slabY(n);
   return [
     { id:`${id}_c`, pos:[0,  y,0],  scale:[34,0.25,22], phase, from:'top', intro, green:false },
@@ -41,7 +54,7 @@ function slab(id, n, phase, intro) {
   ];
 }
 
-function outerWalls(id, n, phase, intro) {
+function outerWalls(id: string, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = wallY(n);
   return [
     { id:`${id}_f`, pos:[0,  y, 11], scale:[34,5,0.25], phase,      from:'front', intro, green:false },
@@ -51,7 +64,7 @@ function outerWalls(id, n, phase, intro) {
   ];
 }
 
-function columns(id, n, phase, intro) {
+function columns(id: string, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = wallY(n);
   return [
     { id:`${id}_fl`, pos:[-17,y,-11], scale:[0.55,5,0.55], phase, from:'grow', intro, green:false },
@@ -63,13 +76,13 @@ function columns(id, n, phase, intro) {
 
 // Window: outer frame box + horizontal bar + vertical bar (cross detail)
 // All window edges are green
-function window3(id, pos, w, h, axis, phase, intro) {
+function window3(id: string, pos: Vector3Array, w: number, h: number, axis: 'x' | 'y' | 'z', phase: number, intro: boolean): ElementDescriptor[] {
   const depth = 0.22;
   const [px, py, pz] = pos;
   const isX = axis === 'x';
-  const frameScale = isX ? [depth, h, w] : [w, h, depth];
-  const hBarScale  = isX ? [depth+0.05, 0.12, w * 0.95] : [w * 0.95, 0.12, depth+0.05];
-  const vBarScale  = isX ? [depth+0.05, h * 0.9, 0.12]  : [0.12, h * 0.9, depth+0.05];
+  const frameScale: Vector3Array = isX ? [depth, h, w] : [w, h, depth];
+  const hBarScale: Vector3Array  = isX ? [depth+0.05, 0.12, w * 0.95] : [w * 0.95, 0.12, depth+0.05];
+  const vBarScale: Vector3Array  = isX ? [depth+0.05, h * 0.9, 0.12]  : [0.12, h * 0.9, depth+0.05];
   return [
     { id:`${id}_frame`, pos:[px,py,pz],        scale:frameScale,  phase,        from: isX?'right':'front', intro, green:true  },
     { id:`${id}_hbar`,  pos:[px,py,pz],        scale:hBarScale,   phase:phase+0.01, from:'grow', intro, green:true  },
@@ -79,7 +92,7 @@ function window3(id, pos, w, h, axis, phase, intro) {
 
 // ─── FURNITURE PRIMITIVES ─────────────────────────────────────────────────
 // Chair: seat box + 4 thin legs + back rest — all green edges
-function chair(id, cx, fz, n, phase, intro) {
+function chair(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     // Seat
@@ -95,7 +108,7 @@ function chair(id, cx, fz, n, phase, intro) {
 }
 
 // Table: flat top + 4 legs
-function table(id, cx, fz, n, phase, intro) {
+function table(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_top`,  pos:[cx, y+0.95, fz],        scale:[2.5,0.12,1.4], phase, from:'grow', intro, green:true },
@@ -107,7 +120,7 @@ function table(id, cx, fz, n, phase, intro) {
 }
 
 // TV: tall thin slab + stand post + base
-function tv(id, cx, fz, n, phase, intro) {
+function tv(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_screen`, pos:[cx, y+2.1, fz],       scale:[3.0,1.8,0.12], phase, from:'grow', intro, green:true },
@@ -117,7 +130,7 @@ function tv(id, cx, fz, n, phase, intro) {
 }
 
 // Photo frame: thin portrait rectangle on wall
-function photoFrame(id, cx, wy, fz, phase, intro) {
+function photoFrame(id: string, cx: number, wy: number, fz: number, phase: number, intro: boolean): ElementDescriptor[] {
   return [
     { id:`${id}_frame`, pos:[cx, wy+0.6, fz],   scale:[1.0,1.4,0.08], phase, from:'grow', intro, green:true },
     { id:`${id}_inner`, pos:[cx, wy+0.6, fz],   scale:[0.7,1.0,0.10], phase:phase+0.01, from:'grow', intro, green:true },
@@ -125,7 +138,7 @@ function photoFrame(id, cx, wy, fz, phase, intro) {
 }
 
 // Sofa: wide seat + back + arm rests
-function sofa(id, cx, fz, n, phase, intro) {
+function sofa(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_seat`,  pos:[cx, y+0.48, fz],        scale:[3.2,0.35,1.2], phase, from:'grow', intro, green:true },
@@ -136,7 +149,7 @@ function sofa(id, cx, fz, n, phase, intro) {
 }
 
 // Bookshelf: vertical cabinet + 3 shelf lines
-function shelf(id, cx, fz, n, phase, intro) {
+function shelf(id: string, cx: number, fz: number, n: number, phase: number, intro: boolean): ElementDescriptor[] {
   const y = furY(n);
   return [
     { id:`${id}_body`,  pos:[cx, y+1.2, fz],         scale:[1.8,2.4,0.4],  phase, from:'grow', intro, green:true },
@@ -147,7 +160,7 @@ function shelf(id, cx, fz, n, phase, intro) {
 }
 
 // ─── FULL ELEMENT LIST ────────────────────────────────────────────────────
-const ELEMENTS = [
+const ELEMENTS: ElementDescriptor[] = [
 
   // ══════════════════════════════════════════════════════════════════
   //  GROUND FLOOR  (intro auto-play 0 → 0.30)
@@ -295,7 +308,7 @@ const ELEMENTS = [
 // ─── TRAVEL DISTANCE ──────────────────────────────────────────────────────
 const TRAVEL = 60;
 
-function startPos(el) {
+function startPos(el: ElementDescriptor): Vector3Array {
   const [x,y,z] = el.pos;
   switch(el.from) {
     case 'top':   return [x, y+TRAVEL, z];
@@ -313,9 +326,9 @@ function Grid() {
 }
 
 // ─── PIECE ───────────────────────────────────────────────────────────────
-function Piece({ data, progRef }: { data: any, progRef: any }) {
-  const meshRef = useRef<any>(null);
-  const edgeRef = useRef<any>(null);
+function Piece({ data, progRef }: { data: ElementDescriptor, progRef: React.MutableRefObject<number> }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const edgeRef = useRef<THREE.LineSegments>(null);
   const sp0     = useMemo(() => startPos(data), [data]);
 
   const [w,h,d] = data.scale;
@@ -350,7 +363,7 @@ function Piece({ data, progRef }: { data: any, progRef: any }) {
 
     // Fill: very subtle
     if (meshRef.current.material) {
-      meshRef.current.material.opacity = e * (data.green ? 0.06 : 0.30);
+      (meshRef.current.material as THREE.MeshStandardMaterial).opacity = e * (data.green ? 0.06 : 0.30);
     }
 
     // Edge: green flash on land, then settle to target color
@@ -361,9 +374,9 @@ function Piece({ data, progRef }: { data: any, progRef: any }) {
         new THREE.Color(flashEdge),
         fresh
       );
-      edgeRef.current.material.color.copy(col);
+      (edgeRef.current.material as THREE.LineBasicMaterial).color.copy(col);
       // Green elements stay bright; structural fades to gentle
-      edgeRef.current.material.opacity = e * (data.green
+      (edgeRef.current.material as THREE.LineBasicMaterial).opacity = e * (data.green
         ? 0.70 + fresh*0.30
         : 0.22 + fresh*0.60
       );
@@ -391,7 +404,7 @@ function Piece({ data, progRef }: { data: any, progRef: any }) {
 
 // ─── ANNOTATION DOTS ─────────────────────────────────────────────────────
 function Dots() {
-  const pts = [
+  const pts: Vector3Array[] = [
     [-17,0,11],[17,0,11],[-17,0,-11],[17,0,-11],
     [-17,slabY(1),11],[17,slabY(1),11],
     [-17,slabY(2),11],[17,slabY(2),11],
@@ -399,7 +412,7 @@ function Dots() {
     [0,  slabY(4), 0],
   ];
   return <>
-        {pts.map((p: any, i: number)=>(
+        {pts.map((p, i)=>(
       <mesh key={i} position={p} rotation={[-Math.PI/2,0,0]}>
         <ringGeometry args={[0.20,0.35,24]}/>
         <meshBasicMaterial color={C.edgeGreen} transparent opacity={0.55} side={THREE.DoubleSide}/>
@@ -409,7 +422,7 @@ function Dots() {
 }
 
 // ─── FLOOR LEVEL LINES ────────────────────────────────────────────────────
-function FloorLines({ progRef }: { progRef: any }) {
+function FloorLines({ progRef }: { progRef: React.MutableRefObject<number> }) {
   const FLOORS = [
     { y:slabY(0), t:0.10 },
     { y:slabY(1), t:0.42 },
@@ -421,7 +434,7 @@ function FloorLines({ progRef }: { progRef: any }) {
   useFrame(()=>{
     FLOORS.forEach((f,i)=>{
       const a = THREE.MathUtils.clamp((progRef.current-f.t)/0.06,0,1);
-      if(refs[i].current?.material) refs[i].current.material.opacity = a*0.45;
+      if(refs[i].current?.material) (refs[i].current.material as THREE.LineBasicMaterial).opacity = a*0.45;
     });
   });
 
@@ -442,7 +455,7 @@ const INTRO_MS = 2600;
 
 function Scene() {
   const { mouse } = useThree();
-  const groupRef  = useRef<any>(null);
+  const groupRef  = useRef<THREE.Group>(null);
 
   const introStart = useRef<number | null>(null);
   const introDone  = useRef(false);
@@ -497,7 +510,7 @@ function Scene() {
 
       <group position={[0,-4,0]}>
         <Grid/>
-        {ELEMENTS.map((el: any)=>(
+        {ELEMENTS.map((el)=>(
           <Piece key={el.id} data={el} progRef={progSmooth}/>
         ))}
         <FloorLines progRef={progSmooth}/>
