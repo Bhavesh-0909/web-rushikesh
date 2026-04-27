@@ -1,13 +1,13 @@
 import MapComponent from "./MapComponent";
-
+import Image from "next/image";
 export const Footer = () => {
   return (
     <footer className="relative px-6 md:px-24 py-20 md:py-32 bg-brand-text text-white z-30 overflow-hidden">
       <div className="flex flex-col md:flex-row justify-between items-start gap-16 mb-24 relative z-10">
         <div className="max-w-md">
           <div className="flex items-center gap-4 mb-10 group cursor-none">
-            <div className="w-12 h-12 flex items-center justify-center bg-brand-green rounded-lg shadow-lg shadow-brand-green/40">
-              <span className="text-white font-display font-bold text-xl">R</span>
+            <div className="w-fit h-fit flex items-center justify-center">
+              <Image src="/logo.png" alt="Logo" width={50} height={50} className='bg-transparent' />
             </div>
             <span className="font-display font-bold uppercase tracking-widest text-lg md:text-xl text-left">
               Rushikesh Sutar <br />

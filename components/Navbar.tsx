@@ -4,17 +4,18 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 const ScaleIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <motion.svg 
-    width="24" 
-    height="24" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+  <motion.svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
     animate={{ rotate: isOpen ? 90 : 0 }}
     transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -52,9 +53,9 @@ export const Navbar = () => {
       "fixed top-0 left-0 w-full z-[100] transition-all duration-700 py-4 md:py-6 px-6 md:px-12 flex justify-between items-center",
       (isScrolled || !isHomePage) ? "bg-brand-background border-b border-brand-border py-3 md:py-4" : "bg-transparent"
     )}>
-      <Link href="/" className="flex items-center gap-3 md:gap-4 cursor-none group">
-        <div className="w-10 h-10 md:w-12 h-12 flex items-center justify-center bg-brand-green rounded-lg shadow-lg shadow-brand-green/20">
-          <span className="text-white font-display font-bold text-lg md:text-xl">R</span>
+      <Link href="/" className="flex items-center gap-1 md:gap-2 cursor-none group">
+        <div className="w-fit h-fit flex items-center justify-center">
+          <Image src="/logo.png" alt="Logo" width={50} height={50} className='bg-transparent' />
         </div>
         <span className="font-display font-bold uppercase tracking-[0.2em] text-[7px] md:text-[10px] leading-tight flex flex-col">
           <span>Rushikesh Sutar</span>
@@ -64,7 +65,7 @@ export const Navbar = () => {
 
       <div className="hidden md:flex gap-12 text-[10px] uppercase tracking-[0.3em] font-medium text-brand-text/60">
         {navLinks.map((link) => (
-          <Link 
+          <Link
             key={link.name}
             href={link.href}
             className="hover:text-brand-green transition-colors cursor-none"
@@ -74,8 +75,8 @@ export const Navbar = () => {
         ))}
       </div>
 
-      <button 
-        onClick={() => setIsMenuOpen(!isMenuOpen)} 
+      <button
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="md:hidden flex items-center justify-center p-3 rounded-full bg-brand-text text-white hover:bg-brand-green transition-all cursor-none"
       >
         <ScaleIcon isOpen={isMenuOpen} />
@@ -83,7 +84,7 @@ export const Navbar = () => {
 
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -92,7 +93,7 @@ export const Navbar = () => {
           >
             <div className="flex justify-between items-center mb-24">
               <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-white/40">Navigation</span>
-              <button 
+              <button
                 onClick={() => setIsMenuOpen(false)}
                 className="text-white hover:text-brand-green transition-colors cursor-none"
               >
@@ -102,10 +103,10 @@ export const Navbar = () => {
 
             <div className="flex flex-col gap-8">
               {navLinks.map((link) => (
-                <Link 
-                  key={link.name} 
-                  href={link.href} 
-                  onClick={() => setIsMenuOpen(false)} 
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsMenuOpen(false)}
                   className="text-4xl md:text-6xl font-display font-bold text-white hover:text-brand-green transition-all tracking-tighter"
                 >
                   {link.name}
@@ -123,9 +124,9 @@ export const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {isMenuOpen && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
