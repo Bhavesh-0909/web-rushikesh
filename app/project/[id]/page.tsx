@@ -98,39 +98,37 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         : await absoluteUrl("/default-preview.png")
 
     return {
-      title: `${project.title} — ${siteName}`,
+      title: `${project.title} | Rushikesh Sutar & Associates`,
       alternates: { canonical: pageUrl },
       openGraph: {
         type: "website",
         url: pageUrl,
         title: project.title,
         images: [{ url: hero, width: 1200, height: 630, alt: project.title }],
-        siteName,
+        siteName: "Rushikesh Sutar & Associates",
         locale: "en_US",
       },
       twitter: {
         card: "summary_large_image",
         title: project.title,
         images: [hero],
-        creator: "@hariomjangid",
-        site: "@hariomjangid",
       },
     }
   } catch {
-    const url = await absoluteUrl(`/projects/${params.id}`)
+    const url = await absoluteUrl(`/project/${params.id}`)
     return {
-      title: "Project — Hariom Jangid Architects",
+      title: "Project | Rushikesh Sutar & Associates",
       alternates: { canonical: url },
       openGraph: {
         type: "website",
         url,
-        title: "Project — Hariom Jangid Architects",
+        title: "Project | Rushikesh Sutar & Associates",
         images: [{ url: await absoluteUrl("/default-preview.png"), width: 1200, height: 630 }],
-        siteName: "Hariom Jangid Architects",
+        siteName: "Rushikesh Sutar & Associates",
       },
       twitter: {
         card: "summary_large_image",
-        title: "Project — Hariom Jangid Architects",
+        title: "Project | Rushikesh Sutar & Associates",
         images: [await absoluteUrl("/default-preview.png")],
       },
     }

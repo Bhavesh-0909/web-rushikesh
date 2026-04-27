@@ -6,11 +6,10 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-// import AdminControls from "@/components/admin-controls"
-// import AdminEditControls from "@/components/admin-edit-controls"
+import AdminEditControls from "@/components/admin-edit-controls"
 import { supabase, type Project } from "@/lib/supabase"
-import { createSlug } from "@/lib/utils"
-import { Filter, Calendar, Clock } from "lucide-react"
+import { createSlug, cn } from "@/lib/utils"
+import { Filter, Calendar, Clock, ArrowRight } from "lucide-react"
 type SortOption = "recent" | "oldest" | "year-desc" | "year-asc"
 
 export default function ClientProjectsPage() {
@@ -18,7 +17,7 @@ export default function ClientProjectsPage() {
   const [sortBy, setSortBy] = useState<SortOption>("year-desc") // default to Year (Newest)
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
-  const [showAdminControls, setShowAdminControls] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   const fetchProjects = async () => {
     try {
@@ -39,19 +38,9 @@ export default function ClientProjectsPage() {
   useEffect(() => {
     fetchProjects()
 
-    // Ctrl+D toggles Admin controls
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key.toLowerCase() === "d") {
-        event.preventDefault()
-        const password = prompt("Enter admin password:")
-        if (password === "hahaharry") {
-          setShowAdminControls((prev) => !prev)
-        }
-      }
+    if (sessionStorage.getItem("admin_auth") === "true") {
+      setIsAdmin(true)
     }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
   
@@ -92,159 +81,128 @@ export default function ClientProjectsPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-violet-600"></div>
-          <p className="mt-4 text-gray-600">{"Loading projects..."}</p>
-        </div>
+      <div className="min-h-screen bg-brand-background flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ ease: "linear", duration: 1, repeat: Infinity }}
+          className="h-12 w-12 border-t-2 border-brand-green rounded-full"
+        />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-      
-      {/* Optional admin add panel */}
-      {/* <AdminControls onDataUpdated={handleProjectAdded} /> */}
-
-      {/* Hero */}
-      <section className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-brand-background text-brand-text overflow-x-hidden pt-32 pb-20 px-6">
+      <section className="max-w-7xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-24"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="text-violet-600 text-sm font-medium tracking-wider uppercase mb-4 block">{"Our Work"}</span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-gray-900 mb-6 leading-tight">
-            {"Featured Projects"}
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-[1px] w-12 bg-brand-border" />
+            <span className="text-brand-green text-[10px] uppercase tracking-[0.4em] font-bold">The Portfolio</span>
+            <div className="h-[1px] w-12 bg-brand-border" />
+          </div>
+          <h1 className="text-6xl md:text-8xl font-display font-medium tracking-tighter mb-8 uppercase">
+            Curated <span className="text-brand-green italic">Works</span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {
-              "Explore our diverse portfolio of architectural projects spanning residential, commercial, and public spaces."
-            }
+          <p className="text-brand-text/50 max-w-2xl mx-auto text-lg italic font-serif">
+            "A collection of architectural visions brought to life through sustainable design and meticulous craftsmanship."
           </p>
         </motion.div>
 
-        {/* Centered Filters and Sort */}
         <motion.div
-          className="flex flex-col items-center gap-6 mb-12"
+          className="flex flex-col items-center gap-8 mb-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
         >
-          {/* Category chips */}
           <div className="flex flex-wrap justify-center gap-3">
             {categories.map((category) => (
-              <Button
+              <button
                 key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                className={`${
-                  selectedCategory === category
-                    ? "bg-violet-600 text-white hover:bg-violet-700"
-                    : "border-violet-600 text-violet-700 hover:bg-violet-50"
-                }`}
+                className={cn(
+                  "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold transition-all duration-300 glass",
+                  selectedCategory === category 
+                    ? "bg-brand-green text-white" 
+                    : "hover:bg-brand-green hover:text-white"
+                )}
                 onClick={() => setSelectedCategory(category)}
               >
                 {category}
-              </Button>
+              </button>
             ))}
           </div>
 
-          {/* Sort control */}
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl border border-violet-300 px-3 py-2 text-sm text-violet-700 flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <span className="hidden sm:inline">{"Sort by"}</span>
+          <div className="flex items-center gap-4">
+            <div className="glass px-4 py-2 rounded-full text-[9px] uppercase tracking-widest font-bold flex items-center gap-2 opacity-60">
+              <Filter className="h-3 w-3" /> Sort By
             </div>
             <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
-              <SelectTrigger className="w-56 border-violet-400">
-                <SelectValue placeholder="Sort by..." />
+              <SelectTrigger className="w-48 bg-transparent border-brand-border rounded-full text-[10px] uppercase tracking-widest font-bold h-10">
+                <SelectValue placeholder="Sort..." />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="year-desc">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{"Year (Newest)"}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="year-asc">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{"Year (Oldest)"}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="recent">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4" />
-                    <span>{"Recently Added"}</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="oldest">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4" />
-                    <span>{"Oldest First"}</span>
-                  </div>
-                </SelectItem>
+              <SelectContent className="rounded-2xl border-brand-border">
+                <SelectItem value="year-desc">Year (Newest)</SelectItem>
+                <SelectItem value="year-asc">Year (Oldest)</SelectItem>
+                <SelectItem value="recent">Recently Added</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </motion.div>
 
-        {/* Projects Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
         >
           {filteredProjects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 1, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative"
             >
-              <div className="relative group">
-                <Link href={`/projects/${createSlug(project.title)}`}>
-                  <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
-                    <div className="relative">
-                      <img
-                        src={project.hero_image || "/placeholder.svg?height=320&width=640&query=project-hero"}
-                        alt={project.title}
-                        className="w-full h-64 object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      {project.featured && (
-                        <span className="absolute top-4 left-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                          Featured
-                        </span>
-                      )}
-                    </div>
-                    <CardContent className="p-6 flex flex-col gap-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-violet-700 font-medium">{project.category}</span>
-                        <span className="text-gray-500">{project.year}</span>
-                      </div>
-                      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-violet-700 transition-colors">
-                        {project.title}
-                      </h3>
-                      {project.location && <p className="text-gray-600 text-sm">{project.location}</p>}
-                      <p className="text-gray-700 leading-relaxed">{project.description}</p>
-                      <div className="pt-2">
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-{/* 
-                <AdminEditControls
-                  isVisible={showAdminControls}
-                  itemId={project.id}
+              {isAdmin && (
+                <AdminEditControls 
+                  isVisible={true} 
+                  itemId={project.id} 
                   itemType="project"
                   onDelete={handleProjectDeleted}
-                /> */}
-              </div>
+                />
+              )}
+
+              <Link href={`/project/${createSlug(project.title)}`}>
+                <div className="bg-white/50 backdrop-blur-sm border border-brand-border/30 rounded-[40px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 h-full">
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={project.hero_image || "/placeholder.svg"}
+                      alt={project.title}
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-brand-green/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                      <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-brand-green scale-50 group-hover:scale-100 transition-transform duration-500">
+                        <ArrowRight size={20} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-green">{project.category}</span>
+                      <span className="text-[10px] uppercase tracking-widest font-bold opacity-30">{project.year}</span>
+                    </div>
+                    <h3 className="text-2xl font-display font-medium uppercase tracking-tighter mb-4 leading-none">
+                      {project.title}
+                    </h3>
+                    <p className="text-[11px] uppercase tracking-widest text-brand-text/40">{project.location}</p>
+                  </div>
+                </div>
+              </Link>
             </motion.div>
           ))}
         </motion.div>

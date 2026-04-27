@@ -21,9 +21,9 @@ export const Footer = () => {
             <div className="flex flex-col gap-4">
               <span className="text-brand-green font-black mb-2 opacity-100">Navigation</span>
               <a href="#about" className="hover:text-white transition-colors cursor-none">Studio</a>
-              <a href="/studio" className="hover:text-white transition-colors cursor-none">Gallery</a>
-              <a href="#projects" className="hover:text-white transition-colors cursor-none">Portfolio</a>
-              <a href="#team" className="hover:text-white transition-colors cursor-none">Collective</a>
+              <a href="/gallery" className="hover:text-white transition-colors cursor-none">Gallery</a>
+              <a href="/project" className="hover:text-white transition-colors cursor-none">Projects</a>
+              <a href="/team" className="hover:text-white transition-colors cursor-none">Collective</a>
             </div>
             <div className="flex flex-col gap-4">
               <span className="text-brand-green font-black mb-2 opacity-100">Connect</span>

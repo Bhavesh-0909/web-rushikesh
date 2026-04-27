@@ -5,6 +5,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import * as THREE from "three"
 
@@ -292,7 +293,19 @@ function useThreeScene(
 export default function NotFound() {
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
   useThreeScene(canvasRef, containerRef)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
+        e.preventDefault()
+        router.push("/youcantseeme")
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [router])
 
   return (
     <div
