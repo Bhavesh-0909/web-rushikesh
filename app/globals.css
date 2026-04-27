@@ -6,8 +6,9 @@
 
 @theme {
   /* Map Tailwind to the Next.js font variables */
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-display), sans-serif;
+  --font-arial-bold: var(--font-arial-bold);
+  --font-sans: var(--font-arial-bold), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-arial-bold), sans-serif;
   --font-serif: var(--font-serif), serif;
 
   --color-brand-green: #28977b;
@@ -19,7 +20,7 @@
 
 @layer base {
   body {
-    @apply font-sans antialiased selection:bg-brand-green selection:text-white cursor-none bg-background text-foreground;
+    @apply font-arial-bold antialiased selection:bg-brand-green selection:text-white cursor-none bg-background text-foreground;
   }
 
   h1,
@@ -34,7 +35,7 @@
   }
 
   html {
-    @apply font-sans;
+    @apply font-arial-bold;
   }
 }
 

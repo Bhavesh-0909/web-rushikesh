@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
@@ -8,20 +8,14 @@ import { SmoothScroll } from "../components/SmoothScroll";
 import { cn } from "@/lib/utils";
 
 // 1. Configure your custom fonts
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-display",
+const arial = localFont({
+  src: "../public/fonts/Arial-Bold.ttf",
+  variable: "--font-arial-bold",
 });
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-serif",
-});
 
 export const metadata: Metadata = {
-  title: "Rushikesh Sutar & Associates", 
+  title: "Rushikesh Sutar & Associates",
   description: "Architecture and Design Studio Portfolio",
 };
 
@@ -31,16 +25,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("antialiased", spaceGrotesk.variable, playfair.variable, "font-sans", inter.variable)}>
+    <html lang="en" className={cn("antialiased", arial.variable, "font-arial-bold")}>
       <body className="relative min-h-screen flex flex-col text-brand-text overflow-x-hidden selection:bg-brand-green selection:text-white bg-brand-background">
         <SmoothScroll>
           <CustomCursor />
           <Navbar />
-          
+
           <main className="grow">
             {children}
           </main>
-          
+
           <Footer />
         </SmoothScroll>
       </body>
