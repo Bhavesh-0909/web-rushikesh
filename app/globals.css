@@ -10,11 +10,11 @@
   --font-display: var(--font-display), sans-serif;
   --font-serif: var(--font-serif), serif;
 
-  --color-brand-green: #25D366;
+  --color-brand-green: #28977b;
   --color-brand-sage: #88C9B3;
   --color-brand-background: #FCFCF9;
-  --color-brand-text: #1A1A1A;
-  --color-brand-border: #E5E7EB;
+  --color-brand-text: #212121;
+  --color-brand-border: #d1d5db;
 }
 
 @layer base {
@@ -22,12 +22,17 @@
     @apply font-sans antialiased selection:bg-brand-green selection:text-white cursor-none bg-background text-foreground;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     @apply font-display tracking-tight text-brand-text;
   }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   html {
     @apply font-sans;
   }
@@ -59,8 +64,13 @@
 
 @layer utilities {
   @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-100%); }
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-100%);
+    }
   }
 
   .animate-marquee {
