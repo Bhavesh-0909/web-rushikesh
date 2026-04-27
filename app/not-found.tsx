@@ -9,7 +9,10 @@ import Link from "next/link"
 import * as THREE from "three"
 
 // ─── 3D Scene ──────────────────────────────────────────────────────────────
-function useThreeScene(canvasRef, containerRef) {
+function useThreeScene(
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
+  containerRef: React.RefObject<HTMLDivElement | null>
+) {
   useEffect(() => {
     const canvas    = canvasRef.current
     const container = containerRef.current
@@ -41,16 +44,22 @@ function useThreeScene(canvasRef, containerRef) {
     const FAINT = 0xc8d4e0
     const WHITE = 0xffffff
 
-    function fillMat(opacity) {
+    function fillMat(opacity: number) {
       return new THREE.MeshStandardMaterial({
         color: WHITE, transparent: true, opacity, roughness: 1, metalness: 0,
       })
     }
-    function edgeMat(color, opacity) {
+    function edgeMat(color: number | string, opacity: number) {
       return new THREE.LineBasicMaterial({ color, transparent: true, opacity })
     }
 
-    function addPiece(parent, pos, scale, green, fillOp) {
+    function addPiece(
+      parent: THREE.Group | THREE.Object3D,
+      pos: [number, number, number],
+      scale: [number, number, number],
+      green: boolean,
+      fillOp?: number
+    ) {
       const geo  = new THREE.BoxGeometry(...scale)
       const edge = new THREE.EdgesGeometry(geo)
       const mesh  = new THREE.Mesh(geo, fillMat(fillOp ?? (green ? 0.05 : 0.28)))
@@ -73,7 +82,7 @@ function useThreeScene(canvasRef, containerRef) {
     scene.add(root)
 
     // ── Floor builder ───────────────────────────────────────────────────
-    function buildFloor(n) {
+    function buildFloor(n: number) {
       const FH = 4.5
       const sy = n * FH - 0.1
       const wy = n * FH + 2.2
@@ -91,19 +100,19 @@ function useThreeScene(canvasRef, containerRef) {
       addPiece(g, [10,   wy,  0], [0.22, 4.5, 14], false)
 
       // Columns
-      for (const p of [[-10,wy,-7],[10,wy,-7],[-10,wy,7],[10,wy,7]])
+      for (const p of ([[-10, wy, -7], [10, wy, -7], [-10, wy, 7], [10, wy, 7]] as [number, number, number][]))
         addPiece(g, p, [0.5, 4.5, 0.5], false)
 
       // Interior partition
       addPiece(g, [0, wy, 0], [0.18, 4.5, 10], false)
 
       // Windows (green, with cross bars)
-      for (const p of [[-5, wy+0.3, 7.15], [2, wy+0.3, 7.15], [8, wy+0.3, 7.15]]) {
+      for (const p of ([[-5, wy + 0.3, 7.15], [2, wy + 0.3, 7.15], [8, wy + 0.3, 7.15]] as [number, number, number][])) {
         addPiece(g, p, [2.5,  2,    0.22], true)
         addPiece(g, p, [2.5 * 0.9, 0.1, 0.26], true)
         addPiece(g, p, [0.1, 2 * 0.85, 0.26], true)
       }
-      for (const p of [[10.15, wy+0.3, -2], [10.15, wy+0.3, 2]]) {
+      for (const p of ([[10.15, wy + 0.3, -2], [10.15, wy + 0.3, 2]] as [number, number, number][])) {
         addPiece(g, p, [0.22, 2,    3],   true)
         addPiece(g, p, [0.26, 0.1,  3 * 0.9], true)
         addPiece(g, p, [0.26, 2 * 0.85, 0.1], true)
@@ -133,7 +142,7 @@ function useThreeScene(canvasRef, containerRef) {
 
     // Exposed green rebar / columns (partially risen)
     const rebarHeights = [2.5, 1.8, 3.2]
-    for (const [i, p] of [[-9, 1, -6], [-9, 1, 6], [8, 1.5, -6]].entries())
+    for (const [i, p] of ([[-9, 1, -6], [-9, 1, 6], [8, 1.5, -6]] as [number, number, number][]).entries())
       addPiece(missing, p, [0.4, rebarHeights[i], 0.4], true)
 
     // Floating slab fragment — like it fell mid-construction
@@ -153,9 +162,9 @@ function useThreeScene(canvasRef, containerRef) {
     root.add(missing)
 
     // ── Blueprint annotation dots ────────────────────────────────────────
-    const dotPositions = [
-      [-10,-0.1,7],[10,-0.1,7],[-10,-0.1,-7],[10,-0.1,-7],
-      [-10,4.4,7],[10,4.4,7],[-10,8.9,7],[10,8.9,7],
+    const dotPositions: [number, number, number][] = [
+      [-10, -0.1, 7], [10, -0.1, 7], [-10, -0.1, -7], [10, -0.1, -7],
+      [-10, 4.4, 7], [10, 4.4, 7], [-10, 8.9, 7], [10, 8.9, 7],
     ]
     for (const p of dotPositions) {
       const dot = new THREE.Mesh(
@@ -193,7 +202,7 @@ function useThreeScene(canvasRef, containerRef) {
     let rotY = 0.3, rotX = 0.15
     let targetY = rotY, targetX = rotX
     let autoRotate = true
-    let idleTimer = null
+    let idleTimer: any = null
 
     const resetIdle = () => {
       autoRotate = false
@@ -201,14 +210,14 @@ function useThreeScene(canvasRef, containerRef) {
       idleTimer = setTimeout(() => { autoRotate = true }, 2500)
     }
 
-    const onDown = (e) => {
+    const onDown = (e: any) => {
       isDragging = true
       prevX = e.clientX ?? e.touches?.[0]?.clientX ?? 0
       prevY = e.clientY ?? e.touches?.[0]?.clientY ?? 0
       resetIdle()
     }
     const onUp   = () => { isDragging = false }
-    const onMove = (e) => {
+    const onMove = (e: any) => {
       if (!isDragging) return
       const cx = e.clientX ?? e.touches?.[0]?.clientX ?? 0
       const cy = e.clientY ?? e.touches?.[0]?.clientY ?? 0
@@ -217,7 +226,7 @@ function useThreeScene(canvasRef, containerRef) {
       targetX  = Math.max(-0.5, Math.min(0.7, targetX))
       prevX = cx; prevY = cy
     }
-    const onWheel = (e) => {
+    const onWheel = (e: WheelEvent) => {
       camera.position.multiplyScalar(1 + e.deltaY * 0.001)
     }
 
@@ -238,7 +247,7 @@ function useThreeScene(canvasRef, containerRef) {
     window.addEventListener("resize", onResize)
 
     // ── Render loop ──────────────────────────────────────────────────────
-    let animId
+    let animId: number
     const t0 = performance.now()
 
     const animate = () => {
@@ -281,8 +290,8 @@ function useThreeScene(canvasRef, containerRef) {
 
 // ─── Page Component ────────────────────────────────────────────────────────
 export default function NotFound() {
-  const canvasRef    = useRef(null)
-  const containerRef = useRef(null)
+  const canvasRef    = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   useThreeScene(canvasRef, containerRef)
 
   return (
