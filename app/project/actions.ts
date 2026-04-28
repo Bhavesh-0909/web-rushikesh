@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import { Project } from "@/lib/supabase"
+import { createSlug } from "@/lib/utils"
 
 export async function getProjects(): Promise<Project[]> {
   try {
@@ -46,4 +47,23 @@ export async function getRecentProjects(limit: number = 3): Promise<Project[]> {
     console.error("Error fetching recent projects from DB:", error)
     return []
   }
+}
+
+export async function getProjectDetail(idParam: string) {
+
+  // Fetch all projects and find the one whose slugified title matches idParam
+  console.log(idParam);
+  const data = await prisma.projects.findMany();
+
+  if (!data?.length) return { project: null, relatedProjects: [] }
+
+  const project = data.find(p => createSlug(p.title) === idParam) ?? null
+
+  const relatedProjects = project
+    ? data
+      .filter(p => p.id !== project.id && p.category === project.category)
+      .slice(0, 3)
+    : []
+
+  return { project, relatedProjects }
 }

@@ -1,39 +1,12 @@
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import ProjectDetailClient from "@/components/project-detail-client"
-import { createClient } from "@supabase/supabase-js"
 import { createSlug } from "@/lib/utils"
+import { getProjectDetail } from "@/app/project/actions"
 
-interface Project {
-  id: number
-  title: string
-  description: string
-  location: string
-  year: number | string
-  category: string
-  hero_image: string
-  images: string[]
-  client: string
-  area: string
-  status: string
-  architect: string
-  photographer: string
-  subtitle?: string
-  content?: Array<{
-    type: "text" | "image"
-    content: string
-    src?: string
-    caption?: string
-  }>
-  latitude?: number
-  longitude?: number
-  youtube_walkthrough_heading?: string
-  youtube_walkthrough_link?: string
-  created_at: string
-  updated_at: string
-}
+// ... (Project interface stays the same)
 
-type Params = { id: string }
+type Params = Promise<{ id: string }>  // ✅ Params is now a Promise
 
 export const revalidate = 60
 
@@ -45,29 +18,14 @@ async function absoluteUrl(path: string) {
   return `${proto}://${host}${cleaned}`
 }
 
-async function fetchProjectForMeta(param: string) {
-  const url = process.env.SUPABASE_URL!
-  const key = process.env.SUPABASE_ANON_KEY!
-  const sb = createClient(url, key, { auth: { persistSession: false } })
-  const { data: projects } = await sb.from("projects").select("*")
-  if (!projects || projects.length === 0) return null
-
-  let found = projects.find((p) => createSlug(p.title) === param)
-  if (!found && !isNaN(Number(param))) {
-    found = projects.find((p) => p.id === Number(param))
-  }
-  return found || null
-}
-
-// IMPORTANT: We intentionally omit description fields to avoid extra text in previews.
-// Platforms like WhatsApp will render the image thumbnail and the link only.
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { id } = await params  // ✅ await the whole params object
   try {
-    const project = await fetchProjectForMeta(params.id)
-    const siteName = "Hariom Jangid Architects"
+    const { project } = await getProjectDetail(id)
+    const siteName = "Rushikesh Sutar & Associates"
 
     if (!project) {
-      const url = await absoluteUrl(`/projects/${params.id}`)
+      const url = await absoluteUrl(`/projects/${id}`)
       return {
         title: `Project — ${siteName}`,
         alternates: { canonical: url },
@@ -91,21 +49,21 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       ? project.hero_image.startsWith("http")
         ? project.hero_image
         : await absoluteUrl(project.hero_image.startsWith("/") ? project.hero_image : `/${project.hero_image}`)
-      : project.images && project.images.length > 0
+      : project.images?.length
         ? project.images[0].startsWith("http")
           ? project.images[0]
           : await absoluteUrl(project.images[0].startsWith("/") ? project.images[0] : `/${project.images[0]}`)
         : await absoluteUrl("/default-preview.png")
 
     return {
-      title: `${project.title} | Rushikesh Sutar & Associates`,
+      title: `${project.title} | ${siteName}`,
       alternates: { canonical: pageUrl },
       openGraph: {
         type: "website",
         url: pageUrl,
         title: project.title,
         images: [{ url: hero, width: 1200, height: 630, alt: project.title }],
-        siteName: "Rushikesh Sutar & Associates",
+        siteName,
         locale: "en_US",
       },
       twitter: {
@@ -115,26 +73,28 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       },
     }
   } catch {
-    const url = await absoluteUrl(`/project/${params.id}`)
+    const url = await absoluteUrl(`/projects/${id}`)
+    const siteName = "Rushikesh Sutar & Associates"
     return {
-      title: "Project | Rushikesh Sutar & Associates",
+      title: `Project | ${siteName}`,
       alternates: { canonical: url },
       openGraph: {
         type: "website",
         url,
-        title: "Project | Rushikesh Sutar & Associates",
+        title: `Project | ${siteName}`,
         images: [{ url: await absoluteUrl("/default-preview.png"), width: 1200, height: 630 }],
-        siteName: "Rushikesh Sutar & Associates",
+        siteName,
       },
       twitter: {
         card: "summary_large_image",
-        title: "Project | Rushikesh Sutar & Associates",
+        title: `Project | ${siteName}`,
         images: [await absoluteUrl("/default-preview.png")],
       },
     }
   }
 }
 
-export default function Page({ params }: { params: Params }) {
-  return <ProjectDetailClient idParam={params.id} />
+export default async function Page({ params }: { params: Params }) {
+  const { id } = await params  // ✅ await the whole object, then destructure
+  return <ProjectDetailClient idParam={id} />
 }
