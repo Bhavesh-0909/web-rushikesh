@@ -6,6 +6,7 @@ import { Footer } from "../components/Footer";
 import { CustomCursor } from "../components/CustomCursor";
 import { SmoothScroll } from "../components/SmoothScroll";
 import { cn } from "@/lib/utils";
+import { Toaster } from "sonner";
 
 // 1. Configure your custom fonts
 const arial = localFont({
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("antialiased", arial.variable, "font-arial-bold")}>
       <body className="relative min-h-screen flex flex-col text-brand-text overflow-x-hidden selection:bg-brand-green selection:text-white bg-brand-background">
+        <Toaster position="top-center" richColors />
         <SmoothScroll>
           <CustomCursor />
           <Navbar />

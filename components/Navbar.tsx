@@ -42,7 +42,7 @@ export const Navbar = () => {
 
   const navLinks = [
     { name: "The Studio", href: isHomePage ? "#about" : "/about" },
-    { name: "Portfolio", href: isHomePage ? "#projects" : "/project" },
+    { name: "Projects", href: "/project" },
     { name: "Gallery", href: "/gallery" },
     { name: "Team", href: isHomePage ? "#team" : "/team" },
     { name: "Contact", href: isHomePage ? "#contact" : "/contact" }
@@ -51,11 +51,13 @@ export const Navbar = () => {
   return (
     <nav className={cn(
       "fixed top-0 left-0 w-full z-[100] transition-all duration-700 py-4 md:py-6 px-6 md:px-12 flex justify-between items-center",
-      (isScrolled || !isHomePage) ? "bg-brand-background border-b border-brand-border py-3 md:py-4" : "bg-transparent"
+      isScrolled 
+        ? "bg-brand-background border-b border-brand-border py-3 md:py-4 opacity-100 translate-y-0" 
+        : "bg-transparent opacity-0 -translate-y-full pointer-events-none"
     )}>
       <Link href="/" className="flex items-center gap-1 md:gap-2 cursor-none group">
         <div className="w-fit h-fit flex items-center justify-center">
-          <Image src="/logo.png" alt="Logo" width={50} height={50} className='bg-transparent' />
+          <Image src="/logo.png" alt="Logo" width={50} height={50} className='bg-transparent' style={{ height: 'auto' }} />
         </div>
         <span className="font-display font-bold uppercase tracking-[0.2em] text-[7px] md:text-[10px] leading-tight flex flex-col">
           <span>Rushikesh Sutar</span>

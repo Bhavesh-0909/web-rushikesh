@@ -41,21 +41,7 @@ export interface Project {
   updated_at: string
 }
 
-export interface Publication {
-  id: number
-  title: string
-  journal: string
-  date: string
-  author: string
-  image?: string
-  description?: string
-  link?: string
-  featured: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface DesignBoardItem {
+export interface GalleryItem {
   id: number
   title: string
   category: string
@@ -85,21 +71,6 @@ export interface Testimonial {
   image?: string
   rating: number
   text: string
-  featured: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface Achievement {
-  id: number
-  title: string
-  organization: string
-  year: string
-  category: "award" | "certification" | "publication"
-  icon: string
-  description?: string
-  image?: string
-  certificate_url?: string
   featured: boolean
   created_at: string
   updated_at: string

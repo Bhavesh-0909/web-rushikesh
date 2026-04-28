@@ -5,8 +5,10 @@ import { Hero } from '../Hero';
 import { About } from '../About';
 import { Projects } from '../Projects';
 import { Team } from '../Team';
+import { Testimonials } from '../Testimonials';
+import { Instagram } from '../Instagram';
 import { Contact } from '../Contact';
-import { Stats, Clients } from '../OtherSections';
+import { Stats, Clients, Awards } from '../OtherSections';
 import Experience3D from '../Experience3D';
 import Mobile3D from '../Mobile3d';
 
@@ -36,9 +38,12 @@ export default function HomePage() {
       />
       <Stats />
       <Clients />
+      <Awards />
       <About />
       <Projects />
+      <Testimonials />
       <Team />
+      <Instagram />
       <Contact />
     </main>
   );
