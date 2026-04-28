@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import AdminEditControls from "@/components/admin-edit-controls"
-import { supabase, type Project } from "@/lib/supabase"
+import { type Project } from "@/lib/supabase"
+import { getProjects } from "./actions"
 import { createSlug, cn } from "@/lib/utils"
 import { Filter, Calendar, Clock, ArrowRight } from "lucide-react"
 import { GridPattern } from "@/components/ui/grid-pattern"
@@ -22,13 +23,9 @@ export default function ClientProjectsPage() {
 
   const fetchProjects = async () => {
     try {
-      if (supabase) {
-        const { data, error } = await supabase.from("projects").select("*").order("created_at", { ascending: false })
-        if (error) throw error
-        setProjects(data || [])
-      } else {
-        setProjects([])
-      }
+      setLoading(true)
+      const data = await getProjects()
+      setProjects(data || [])
     } catch (error) {
       console.error("Error fetching projects:", error)
     } finally {

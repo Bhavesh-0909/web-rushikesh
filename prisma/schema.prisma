@@ -3,10 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-//This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model test {
   id         BigInt   @id @default(autoincrement())
   created_at DateTime @default(now()) @db.Timestamptz(6)
@@ -16,4 +15,66 @@ model images {
   id         BigInt   @id @default(autoincrement())
   created_at DateTime @default(now()) @db.Timestamptz(6)
   url        String
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model gallery {
+  id          BigInt    @id @default(autoincrement())
+  title       String
+  category    String
+  image       String
+  description String?
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model instagram_posts {
+  id         BigInt    @id @default(autoincrement())
+  image      String
+  likes      Int?      @default(0)
+  comments   Int?      @default(0)
+  post_link  String?
+  post_date  DateTime? @db.Date
+  caption    String?
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model projects {
+  id                          BigInt    @id @default(autoincrement())
+  title                       String
+  subtitle                    String?
+  category                    String
+  location                    String?
+  year                        String?
+  area                        String?
+  photographer                String?
+  client                      String?
+  hero_image                  String
+  description                 String
+  images                      String[]  @default([])
+  content                     Json?     @default("[]")
+  latitude                    Float?
+  longitude                   Float?
+  youtube_walkthrough_heading String?
+  youtube_walkthrough_link    String?
+  featured                    Boolean?  @default(false)
+  created_at                  DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at                  DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model testimonials {
+  id         BigInt    @id @default(autoincrement())
+  name       String
+  role       String?
+  company    String?
+  image      String?
+  rating     Int?      @default(5)
+  text       String
+  featured   Boolean?  @default(false)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
 }

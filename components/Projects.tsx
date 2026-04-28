@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Briefcase, Award, Users } from 'lucide-react';
+import { ArrowRight, Briefcase, Award } from 'lucide-react';
 import { supabase, type Project } from '@/lib/supabase';
 import { cn, createSlug } from '@/lib/utils';
 import AdminEditControls from './admin-edit-controls';
 import Link from 'next/link';
+import { getRecentProjects } from '@/app/project/actions';
 
 export const Projects = () => {
-  const [showAll, setShowAll] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -19,18 +19,19 @@ export const Projects = () => {
     }
 
     const fetchProjects = async () => {
-      if (!supabase) {
-        setProjects(FALLBACK_PROJECTS);
+      try {
+        const data = await getRecentProjects(3);
+        if (data && data.length > 0) {
+          setProjects(data);
+        } else {
+          setProjects(FALLBACK_PROJECTS.slice(0, 3));
+        }
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+        setProjects(FALLBACK_PROJECTS.slice(0, 3));
+      } finally {
         setLoading(false);
-        return;
       }
-      const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-      if (data && data.length > 0) {
-        setProjects(data);
-      } else {
-        setProjects(FALLBACK_PROJECTS);
-      }
-      setLoading(false);
     };
 
     fetchProjects();
@@ -40,7 +41,7 @@ export const Projects = () => {
     ? projects 
     : projects.filter(p => p.category === activeCategory);
 
-  const displayedProjects = !showAll ? filteredProjects.slice(0, 3) : filteredProjects;
+  const displayedProjects = filteredProjects;
 
   return (
     <section id="projects" className="relative py-40 bg-white/[0.02] backdrop-blur-[1px] text-brand-text z-20 overflow-hidden">
@@ -133,16 +134,14 @@ export const Projects = () => {
         ))}
       </div>
 
-      {!showAll && (
-        <div className="mt-16 flex justify-center px-6 md:px-12">
-          <button 
-            onClick={() => setShowAll(true)}
-            className="w-full md:w-auto md:px-16 py-6 glass rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-brand-green hover:text-white transition-all cursor-none"
-          >
-            View All Projects
-          </button>
-        </div>
-      )}
+      <div className="mt-16 flex justify-center px-6 md:px-12">
+        <Link 
+          href="/project"
+          className="w-full md:w-auto md:px-16 py-6 glass rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-brand-green hover:text-white transition-all cursor-none text-center"
+        >
+          View All Projects
+        </Link>
+      </div>
     </section>
   );
 };
