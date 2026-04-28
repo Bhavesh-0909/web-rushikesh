@@ -10,31 +10,7 @@ import { User, Camera, Building, Share2, Check } from "lucide-react"
 import { toast } from "sonner"
 import { Navbar } from "@/components/Navbar"
 import { getProjectDetail } from "@/app/project/actions"
-
-interface Project {
-  id: number
-  title: string
-  description: string
-  location: string
-  year: number | string
-  category: string
-  hero_image: string
-  images: string[]
-  client: string
-  area: string
-  status: string
-  architect: string
-  photographer: string
-  subtitle?: string
-  content?: Array<{
-    type: "text" | "image"
-    content: string
-    src?: string
-    caption?: string
-  }>
-  created_at: string
-  updated_at: string
-}
+import { Project } from "@/lib/supabase"
 
 export default function ProjectDetailClient({ idParam }: { idParam: string }) {
   const [project, setProject] = useState<Project | null>(null)

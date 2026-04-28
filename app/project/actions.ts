@@ -49,8 +49,7 @@ export async function getRecentProjects(limit: number = 3): Promise<Project[]> {
   }
 }
 
-export async function getProjectDetail(idParam: string) {
-
+export async function getProjectDetail(idParam: string): Promise<{ project: Project | null; relatedProjects: Project[] }> {
   // Fetch all projects and find the one whose slugified title matches idParam
   console.log(idParam);
   const data = await prisma.projects.findMany();
@@ -65,5 +64,18 @@ export async function getProjectDetail(idParam: string) {
       .slice(0, 3)
     : []
 
-  return { project, relatedProjects }
+  const mapProject = (p: any) => ({
+    ...p,
+    id: Number(p.id),
+    created_at: p.created_at?.toISOString() || new Date().toISOString(),
+    updated_at: p.updated_at?.toISOString() || new Date().toISOString(),
+    content: (p.content as any) || [],
+    status: p.status || "Completed",
+    architect: p.architect || "Rushikesh Sutar",
+  }) as unknown as Project;
+
+  return { 
+    project: project ? mapProject(project) : null, 
+    relatedProjects: relatedProjects.map(mapProject) 
+  }
 }
