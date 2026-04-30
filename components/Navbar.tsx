@@ -41,18 +41,20 @@ export const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "The Studio", href: isHomePage ? "#about" : "/about" },
+    { name: "Home", href: "/" },
+    { name: "About Us", href: "/about" },
     { name: "Projects", href: "/project" },
     { name: "Gallery", href: "/gallery" },
-    { name: "Team", href: isHomePage ? "#team" : "/team" },
-    { name: "Contact", href: isHomePage ? "#contact" : "/contact" }
+    { name: "Careers", href: "/careers" },
+    { name: "Contact", href: "/contact" }
   ];
 
   return (
-    <nav className={cn(
+    <>
+      <nav className={cn(
       "fixed top-0 left-0 w-full z-[100] transition-all duration-700 py-4 md:py-6 px-6 md:px-12 flex justify-between items-center",
-      isScrolled 
-        ? "bg-brand-background border-b border-brand-border py-3 md:py-4 opacity-100 translate-y-0" 
+      isScrolled
+        ? "bg-brand-background border-b border-brand-border py-3 md:py-4 opacity-100 translate-y-0"
         : "bg-transparent opacity-0 -translate-y-full pointer-events-none"
     )}>
       <Link href="/" className="flex items-center gap-1 md:gap-2 cursor-none group">
@@ -84,6 +86,8 @@ export const Navbar = () => {
         <ScaleIcon isOpen={isMenuOpen} />
       </button>
 
+      </nav>
+
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -91,7 +95,7 @@ export const Navbar = () => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 top-0 right-0 bg-brand-text z-[200] flex flex-col md:w-[500px] shadow-left p-12 md:p-24"
+            className="fixed inset-0 top-0 right-0 bg-black z-[200] flex flex-col md:w-[500px] shadow-left p-12 md:p-24"
           >
             <div className="flex justify-between items-center mb-24">
               <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-white/40">Navigation</span>
@@ -136,6 +140,6 @@ export const Navbar = () => {
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[150] md:hidden"
         />
       )}
-    </nav>
+    </>
   );
 };
