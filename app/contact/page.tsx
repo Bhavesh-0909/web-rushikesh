@@ -1,5 +1,4 @@
 import { Contact } from "@/components/Contact";
-import ClientContactPage from "./client-page";
 
 export const metadata = {
   title: "Contact Us | Architecture Studio",
