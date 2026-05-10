@@ -51,7 +51,7 @@ const StudioClient = ({studioImages}: {studioImages: string[]}) => {
           </p>
         </header>
 
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+        <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 gap-1 sm:gap-6 space-y-4 sm:space-y-6">
           {studioImages.map((src, i) => (
             <motion.div
               key={i}
