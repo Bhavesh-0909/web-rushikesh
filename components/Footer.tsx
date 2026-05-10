@@ -47,9 +47,8 @@ export const Footer = () => {
               </div>
               <div className="flex flex-col gap-4">
                 <span className="text-brand-green font-black mb-2 opacity-100">Connect</span>
-                <a href="#" className="hover:text-white transition-colors cursor-none">Instagram</a>
-                <a href="#" className="hover:text-white transition-colors cursor-none">LinkedIn</a>
-                <a href="#" className="hover:text-white transition-colors cursor-none">Behance</a>
+                <a href="https://www.instagram.com/rushikeshsutar_and_associates?utm_source=qr&igsh=MWgxaWNlbmY5cml1bA==" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors cursor-none">Instagram</a>
+                <a href="https://www.linkedin.com/company/rushikesh-sutar-associates/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors cursor-none">LinkedIn</a>
               </div>
             </div>
           </div>

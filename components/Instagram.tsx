@@ -50,12 +50,12 @@ export const Instagram = () => {
             </h2>
           </div>
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/rushikeshsutar_and_associates?utm_source=qr&igsh=MWgxaWNlbmY5cml1bA=="
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] font-bold text-brand-green hover:opacity-70 transition-opacity pb-2 border-b border-brand-green/20"
           >
-            <InstaIcon size={14} /> @rushikesh_sutar
+            <InstaIcon size={14} /> @rushikeshsutar_and_associates
           </a>
         </div>
       </div>
