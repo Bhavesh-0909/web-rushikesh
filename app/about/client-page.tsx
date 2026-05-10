@@ -422,7 +422,7 @@ function TeamSection({ teamData }: { teamData: employees[] }) {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-x-16 lg:gap-y-32">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-x-12 lg:gap-y-16">
         {members.map((member, idx) => (
           <motion.div
             key={Number(member.id)}
@@ -439,7 +439,7 @@ function TeamSection({ teamData }: { teamData: employees[] }) {
             onMouseLeave={() => setActive(null)}
           >
             {/* Photo */}
-            <div className="aspect-[3/4] bg-transparent rounded-[2rem] overflow-hidden mb-8 relative border border-brand-border group-hover:border-brand-green transition-colors duration-700 shadow-sm group-hover:shadow-xl group-hover:shadow-brand-green/10">
+            <div className="aspect-[4/5] bg-transparent rounded-[2rem] overflow-hidden mb-6 relative border border-brand-border group-hover:border-brand-green transition-colors duration-700 shadow-sm group-hover:shadow-xl group-hover:shadow-brand-green/10">
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10 pointer-events-none mix-blend-overlay" />
               {member.imageurl ? (
                 <img
@@ -450,7 +450,7 @@ function TeamSection({ teamData }: { teamData: employees[] }) {
               ) : (
                 /* Placeholder when no image */
                 <div className="w-full h-full flex flex-col items-center justify-center bg-brand-border/10">
-                  <span className="text-6xl font-display font-medium text-brand-text/10 group-hover:text-brand-green/20 transition-colors duration-700 tracking-tighter">
+                  <span className="text-5xl font-display font-medium text-brand-text/10 group-hover:text-brand-green/20 transition-colors duration-700 tracking-tighter">
                     {member.name
                       .split(" ")
                       .map((n: string) => n[0])
@@ -468,14 +468,14 @@ function TeamSection({ teamData }: { teamData: employees[] }) {
 
             {/* Info */}
             <div className="flex flex-col flex-grow">
-              <h3 className="text-3xl font-display font-medium tracking-tight mb-2 group-hover:text-brand-green transition-colors duration-500">
+              <h3 className="text-2xl font-display font-medium tracking-tight mb-1 group-hover:text-brand-green transition-colors duration-500">
                 {member.name}
               </h3>
-              <p className="text-brand-green text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold mb-6">
+              <p className="text-brand-green text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-bold mb-4 line-clamp-1">
                 {member.role}
               </p>
-              <div className="w-full h-[1px] bg-brand-border/40 mb-6 group-hover:bg-brand-green/40 transition-colors duration-500 scale-x-0 group-hover:scale-x-100 origin-left" />
-              <p className="text-sm md:text-base text-brand-text/50 leading-relaxed font-light">
+              <div className="w-full h-[1px] bg-brand-border/40 mb-4 group-hover:bg-brand-green/40 transition-colors duration-500 scale-x-0 group-hover:scale-x-100 origin-left" />
+              <p className="text-xs md:text-sm text-brand-text/50 leading-relaxed font-light line-clamp-3 min-h-[60px]">
                 {member.description}
               </p>
             </div>
