@@ -35,7 +35,7 @@ function ProjectsContent() {
       setLoading(false)
     }
   }
-  
+
   useEffect(() => {
     fetchProjects()
 
@@ -56,7 +56,7 @@ function ProjectsContent() {
     }
   }, [searchParams])
 
-  
+
 
   // Categories that exist in data
   const categories = useMemo(() => {
@@ -106,7 +106,7 @@ function ProjectsContent() {
 
   return (
     <div className="min-h-screen bg-brand-background text-brand-text overflow-x-hidden pt-32 pb-4 px-6 relative">
-      <GridPattern 
+      <GridPattern
         squares={[
           [4, 4], [5, 1], [8, 2], [5, 3], [5, 5],
           [10, 10], [12, 15], [15, 10], [10, 15],
@@ -115,7 +115,7 @@ function ProjectsContent() {
         className={cn(
           "[mask-image:linear-gradient(to_bottom,white_80%,transparent)]",
           "fixed inset-0 z-0 w-screen h-screen opacity-50 pointer-events-none"
-        )} 
+        )}
       />
       <section className="max-w-7xl mx-auto relative z-10">
         <motion.div
@@ -149,9 +149,9 @@ function ProjectsContent() {
                 key={category}
                 className={cn(
                   "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold transition-all duration-300 glass",
-                  selectedCategory === category 
-                    ? "bg-brand-green text-white" 
-                    : "hover:bg-brand-green hover:text-white"
+                  selectedCategory === category
+                    ? "bg-brand-green text-brand-green"
+                    : "hover:bg-brand-green hover:text-brand-green"
                 )}
                 onClick={() => setSelectedCategory(category)}
               >
@@ -193,9 +193,9 @@ function ProjectsContent() {
               className="group relative"
             >
               {isAdmin && (
-                <AdminEditControls 
-                  isVisible={true} 
-                  itemId={project.id} 
+                <AdminEditControls
+                  isVisible={true}
+                  itemId={project.id}
                   itemType="project"
                   onDelete={handleProjectDeleted}
                 />

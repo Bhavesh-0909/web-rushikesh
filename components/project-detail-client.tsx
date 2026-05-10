@@ -6,13 +6,15 @@ import ImageGallery from "@/components/image-gallery"
 import { Button } from "@/components/ui/button"
 import { createSlug } from "@/lib/utils"
 import Link from "next/link"
-import { User, Camera, Building, Share2, Check } from "lucide-react"
+import { ArrowLeft, User, Camera, Building, Share2, Check } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Navbar } from "@/components/Navbar"
 import { getProjectDetail } from "@/app/project/actions"
 import { Project } from "@/lib/supabase"
 
 export default function ProjectDetailClient({ idParam }: { idParam: string }) {
+  const router = useRouter()
   const [project, setProject] = useState<Project | null>(null)
   const [relatedProjects, setRelatedProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
@@ -117,6 +119,11 @@ export default function ProjectDetailClient({ idParam }: { idParam: string }) {
 
       {/* Hero Section */}
       <section className="relative h-[100svh] w-full overflow-hidden flex flex-col justify-end">
+        <div className="absolute top-32 left-6 md:left-12 z-50">
+          <button onClick={() => router.back()} className="group flex items-center text-[10px] uppercase tracking-[0.4em] font-bold text-white/70 hover:text-white transition-colors drop-shadow-md">
+            <ArrowLeft className="mr-4 h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Back
+          </button>
+        </div>
         <motion.div
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
