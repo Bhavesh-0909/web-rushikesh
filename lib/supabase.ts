@@ -75,3 +75,13 @@ export interface Testimonial {
   created_at: string
   updated_at: string
 }
+
+export interface Employee {
+  id: number
+  name: string
+  role: string
+  imageurl: string
+  description?: string
+  created_at: string
+  updated_at: string
+}

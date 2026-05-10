@@ -16,6 +16,7 @@ import {
   type GalleryItem,
   type InstagramPost,
   type Testimonial,
+  type Employee,
 } from "@/lib/supabase"
 import { toast } from "sonner"
 import { X, Plus, Edit, Trash2, MapPin, ExternalLink, Video as Youtube, Star, Award, BookOpen, BadgeCheck, Shield, Upload } from "lucide-react"
@@ -37,6 +38,7 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([])
   const [instagramPosts, setInstagramPosts] = useState<InstagramPost[]>([])
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [employees, setEmployees] = useState<Employee[]>([])
 
   // Form states
   const [selectedItem, setSelectedItem] = useState<any>(null)
@@ -105,6 +107,13 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
     featured: false,
   })
 
+  const [employeeForm, setEmployeeForm] = useState({
+    name: "",
+    role: "",
+    imageurl: "",
+    description: "",
+  })
+
   const [achievementForm, setAchievementForm] = useState({
     title: "",
     organization: "",
@@ -139,18 +148,20 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
   const fetchAllData = async () => {
     if (!supabase) return
     try {
-      const [projectsRes, galleryRes, instagramRes, testimonialsRes] =
+      const [projectsRes, galleryRes, instagramRes, testimonialsRes, employeesRes] =
         await Promise.all([
           supabase.from("projects").select("*").order("created_at", { ascending: false }),
           supabase.from("gallery").select("*").order("created_at", { ascending: false }),
           supabase.from("instagram_posts").select("*").order("created_at", { ascending: false }),
           supabase.from("testimonials").select("*").order("created_at", { ascending: false }),
+          supabase.from("employees").select("*").order("created_at", { ascending: false }),
         ])
 
       if (projectsRes.data) setProjects(projectsRes.data)
       if (galleryRes.data) setGalleryItems(galleryRes.data)
       if (instagramRes.data) setInstagramPosts(instagramRes.data)
       if (testimonialsRes.data) setTestimonials(testimonialsRes.data)
+      if (employeesRes.data) setEmployees(employeesRes.data)
     } catch (error) {
       console.error("Error fetching data:", error)
     }
@@ -177,6 +188,7 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
     setDesignForm({ title: "", category: "", image: "", description: "" })
     setInstagramForm({ image: "", likes: 0, comments: 0, post_link: "", post_date: "", caption: "" })
     setTestimonialForm({ name: "", role: "", company: "", image: "", rating: 5, text: "", featured: false })
+    setEmployeeForm({ name: "", role: "", imageurl: "", description: "" })
     setAchievementForm({
       title: "",
       organization: "",
@@ -258,6 +270,15 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
         })
         setActiveTab("testimonials")
         break
+      case "employees":
+        setEmployeeForm({
+          name: item.name || "",
+          role: item.role || "",
+          imageurl: item.imageurl || "",
+          description: item.description || "",
+        })
+        setActiveTab("approve")
+        break
     }
   }
 
@@ -310,6 +331,10 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
         case "testimonials":
           data = testimonialForm
           table = "testimonials"
+          break
+        case "employees":
+          data = employeeForm
+          table = "employees"
           break
         default:
           return
@@ -1056,15 +1081,132 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
 
         {/* Employee Tabs */}
         <TabsContent value="approve" className="space-y-4">
-          <div className="bg-white/50 backdrop-blur-sm border border-dashed border-brand-border rounded-3xl p-12 text-center">
-            <div className="bg-brand-green/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-brand-green" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">Approve Employees</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              New registrations will appear here for verification. This section is currently under development.
-            </p>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold">Approved Employees</h2>
+            {operation !== "add" || selectedItem ? (
+              <Button onClick={resetForms} variant="outline">
+                Back to List
+              </Button>
+            ) : null}
           </div>
+
+          {!selectedItem && operation === "add" ? (
+            <div className="space-y-6">
+              <div className="bg-white p-6 rounded-xl border border-brand-border shadow-sm">
+                <h3 className="text-lg font-medium mb-4">Add New Employee</h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="eName">Name *</Label>
+                      <Input
+                        id="eName"
+                        value={employeeForm.name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmployeeForm((p) => ({ ...p, name: e.target.value }))}
+                        placeholder="Employee Name"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="eRole">Role *</Label>
+                      <Input
+                        id="eRole"
+                        value={employeeForm.role}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmployeeForm((p) => ({ ...p, role: e.target.value }))}
+                        placeholder="Role / Title"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="eImage">Employee Image *</Label>
+                    <ImageUpload
+                      value={employeeForm.imageurl || ""}
+                      onChange={(url: string) => setEmployeeForm((p) => ({ ...p, imageurl: url }))}
+                      onRemove={() => setEmployeeForm((p) => ({ ...p, imageurl: "" }))}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="eDesc">Description</Label>
+                    <Textarea
+                      id="eDesc"
+                      rows={3}
+                      value={employeeForm.description}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEmployeeForm((p) => ({ ...p, description: e.target.value }))}
+                      placeholder="Brief bio or description..."
+                    />
+                  </div>
+
+                  <div className="flex justify-end pt-4">
+                    <Button onClick={() => handleSubmit("employees")} className="bg-brand-green hover:bg-brand-green/90 text-white rounded-full px-8">
+                      Add Employee
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium mb-4">Current Employees</h3>
+                {employees.length === 0 ? (
+                  <p className="text-gray-500">No employees found.</p>
+                ) : (
+                  renderItemsList(employees, "employees")
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white p-6 rounded-xl border border-brand-border shadow-sm space-y-4">
+              <h3 className="text-lg font-medium mb-4">Edit Employee</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="euName">Name *</Label>
+                  <Input
+                    id="euName"
+                    value={employeeForm.name}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmployeeForm((p) => ({ ...p, name: e.target.value }))}
+                    placeholder="Employee Name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="euRole">Role *</Label>
+                  <Input
+                    id="euRole"
+                    value={employeeForm.role}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmployeeForm((p) => ({ ...p, role: e.target.value }))}
+                    placeholder="Role / Title"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="euImage">Employee Image *</Label>
+                <ImageUpload
+                  value={employeeForm.imageurl || ""}
+                  onChange={(url: string) => setEmployeeForm((p) => ({ ...p, imageurl: url }))}
+                  onRemove={() => setEmployeeForm((p) => ({ ...p, imageurl: "" }))}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="euDesc">Description</Label>
+                <Textarea
+                  id="euDesc"
+                  rows={3}
+                  value={employeeForm.description}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEmployeeForm((p) => ({ ...p, description: e.target.value }))}
+                  placeholder="Brief bio or description..."
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button variant="outline" onClick={resetForms}>
+                  Cancel
+                </Button>
+                <Button onClick={() => handleSubmit("employees")} className="bg-brand-green hover:bg-brand-green/90 text-white rounded-full px-8">
+                  Update Employee
+                </Button>
+              </div>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="manage" className="space-y-4">
