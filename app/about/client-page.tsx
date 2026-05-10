@@ -402,7 +402,7 @@ function TeamSection({ teamData }: { teamData: employees[] }) {
   const members = teamData;
 
   return (
-    <section className="max-w-7xl mx-auto mb-16">
+    <section id="team" className="max-w-7xl mx-auto mb-16">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

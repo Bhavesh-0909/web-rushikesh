@@ -6,7 +6,7 @@ export const Team = () => {
   const showAll: boolean = false;
   const router = useRouter();
   const navigate = () => {
-    router.push('/team')
+    router.push('/about/#team')
   }
   return (
     <section id="team" className="relative pt-24 pb-12 md:pt-20 md:pb-16 px-6 md:px-24 border-y border-brand-border/30 z-20">
