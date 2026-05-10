@@ -12,9 +12,9 @@ export const projects: Project[] = [
 ];
 
 export const teamData: TeamMember[] = [
-  { name: "Rushikesh Sutar", role: "Founder & Principal Architect", image: "/rushikesh.png", description: "B.Arch from L T institute of architecture, Associated since 2018. specializes in architecture, interiors, landscape and planning." },
-  { name: "Grishma Sutar", role: "Co-Founder", image: "/grishma.png", description: "M.Arch from CEPT, associated since 2020. specializes in Urban Design & Planning." },
-  { name: "Harshal Sutar", role: "Associate / Interior Designer", image: "/harshal.png", description: "Associated since 2018. specializes in interior design and site execution." },
+  { name: "Rushikesh Sutar", role: "Founder & Principal Architect", image: "https://qziibuebpvlwouanrltj.supabase.co/storage/v1/object/public/images/pnov3w0ggp8_1778397716645.jpeg", description: "B.Arch from L T institute of architecture, Associated since 2018. specializes in architecture, interiors, landscape and planning." },
+  { name: "Grishma Sutar", role: "Co-Founder", image: "https://qziibuebpvlwouanrltj.supabase.co/storage/v1/object/public/images/8gpa47h8tx6_1778398058448.jpeg", description: "M.Arch from CEPT, associated since 2020. specializes in Urban Design & Planning." },
+  { name: "Harshal Sutar", role: "Associate / Interior Designer", image: "https://qziibuebpvlwouanrltj.supabase.co/storage/v1/object/public/images/20geyvz62ti_1778398210911.jpeg", description: "Associated since 2018. specializes in interior design and site execution." },
   { name: "Dipesh Kotekar", role: "Designer", image: "/dipesh.png", description: "Civil Engineering & Interior Design specialist. Bridges precision with aesthetic detailing." },
   { name: "Mamta", role: "Interior Designer", image: "/mamta.png", description: "Specializes in space planning and functional interior environments." },
   { name: "Ruchika Bhurke", role: "Admin & Operations", image: "/ruchika.png", description: "MBA in Sales/Marketing with 30+ years of administrative leadership." },
