@@ -29,9 +29,9 @@ export const Footer = () => {
               <div className="w-fit h-fit flex items-center justify-center">
                 <Image src="/logo.png" alt="Logo" width={50} height={50} className='bg-transparent' style={{ height: 'auto' }} />
               </div>
-              <span className="font-display font-bold uppercase tracking-widest text-lg md:text-xl text-left">
+              <span className="font-display font-bold uppercase tracking-widest text-lg md:text-xl text-brand-green text-left">
                 Rushikesh Sutar <br />
-                <span className="text-brand-green">& Associates</span>
+                <span className="text-white">& Associates</span>
               </span>
             </div>
             <p className="text-white/40 text-sm leading-relaxed mb-12 font-light">

@@ -9,7 +9,7 @@ export const Team = () => {
     router.push('/about/#team')
   }
   return (
-    <section id="team" className="relative pt-24 pb-12 md:pt-20 md:pb-16 px-6 md:px-24 border-y border-brand-border/30 z-20">
+    <section id="team" className="relative px-6 md:px-24 border-y border-brand-border/30 z-20">
       <div className="flex flex-col items-center text-center mb-16 group">
         <div className="max-w-4xl">
           <div className="flex items-center justify-center gap-4 mb-8">
@@ -57,7 +57,7 @@ export const Team = () => {
       <div className="mt-20 flex justify-center px-6 md:px-0">
         <button
           onClick={navigate}
-          className="w-full md:w-auto md:px-16 py-6 glass rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-brand-green hover:text-white transition-all cursor-none"
+          className="w-full md:w-auto md:px-16 py-6 glass rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:text-brand-green transition-all cursor-none"
         >
           Meet The Full Team
         </button>

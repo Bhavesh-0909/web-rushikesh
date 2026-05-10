@@ -37,7 +37,7 @@ export const Instagram = () => {
   if (posts.length === 0) return null;
 
   return (
-    <section id="instagram" className="pt-24 pb-12 md:pt-32 md:pb-16 bg-transparent text-brand-text relative overflow-hidden border-t border-brand-border">
+    <section id="instagram" className="pt-12 pb-6 md:pt-16 md:pb-10 bg-transparent text-brand-text relative overflow-hidden">
       <div className="px-6 md:px-24 mb-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
@@ -49,9 +49,9 @@ export const Instagram = () => {
               Follow Our <span className="text-brand-green italic">Journey</span>
             </h2>
           </div>
-          <a 
-            href="https://instagram.com" 
-            target="_blank" 
+          <a
+            href="https://instagram.com"
+            target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] font-bold text-brand-green hover:opacity-70 transition-opacity pb-2 border-b border-brand-green/20"
           >
@@ -62,7 +62,7 @@ export const Instagram = () => {
 
       <div className="flex gap-4 px-6 md:px-24 overflow-x-auto no-scrollbar pb-12 snap-x">
         {posts.map((post, idx) => (
-          <motion.div 
+          <motion.div
             key={post.id}
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -71,16 +71,16 @@ export const Instagram = () => {
             className="relative flex-shrink-0 w-[280px] md:w-[350px] aspect-square rounded-[24px] overflow-hidden group snap-start"
           >
             {isAdmin && (
-              <AdminEditControls 
-                isVisible={true} 
-                itemId={post.id} 
+              <AdminEditControls
+                isVisible={true}
+                itemId={post.id}
                 itemType="instagram_posts"
                 onDelete={() => setPosts(prev => prev.filter(p => p.id !== post.id))}
               />
             )}
-            <img 
-              src={post.image} 
-              alt={post.caption || "Instagram post"} 
+            <img
+              src={post.image}
+              alt={post.caption || "Instagram post"}
               className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
               loading="lazy"
               decoding="async"
@@ -97,9 +97,9 @@ export const Instagram = () => {
                 </div>
               </div>
               {post.post_link && (
-                <a 
-                  href={post.post_link} 
-                  target="_blank" 
+                <a
+                  href={post.post_link}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 rounded-full bg-brand-green flex items-center justify-center text-white shadow-xl hover:scale-110 transition-transform"
                 >

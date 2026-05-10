@@ -83,7 +83,7 @@ export const Navbar = () => {
   return (
     <>
       {/* Hover Trigger Zone */}
-      <div 
+      <div
         className="fixed top-0 left-0 w-full h-16 z-[90] pointer-events-auto"
         onMouseEnter={() => setIsHovered(true)}
       />
@@ -102,8 +102,8 @@ export const Navbar = () => {
             <Image src="/logo.png" alt="Logo" width={50} height={50} className='bg-transparent' style={{ height: 'auto' }} />
           </div>
           <span className="font-display font-bold uppercase tracking-[0.2em] text-[7px] md:text-[10px] leading-tight flex flex-col">
-            <span>Rushikesh Sutar</span>
-            <span className="text-brand-green">& Associates</span>
+            <span className='text-brand-green'>Rushikesh Sutar</span>
+            <span className="">& Associates</span>
           </span>
         </Link>
 

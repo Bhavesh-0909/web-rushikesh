@@ -68,7 +68,7 @@ export const Clients = () => {
 
 
   return (
-    <section className="relative py-20 border-b border-brand-border bg-transparent overflow-hidden z-40">
+    <section className="relative bg-transparent overflow-hidden z-40">
       <div className="flex overflow-hidden opacity-80 hover:opacity-100 transition-opacity duration-1000">
         <motion.div
           animate={{ x: ["0%", "-50%"] }}
