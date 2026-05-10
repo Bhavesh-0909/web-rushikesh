@@ -1,14 +1,13 @@
 "use client";
 
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "motion/react";
-import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
 import { GridPattern } from "@/components/ui/grid-pattern";
 import { cn } from "@/lib/utils";
 
 /* ─────────────────────────────────────────────
    TYPES
 ───────────────────────────────────────────── */
-
 export type GalleryImage = {
     src?: string;
     label: string;
@@ -19,7 +18,6 @@ export type GalleryImage = {
 /* ─────────────────────────────────────────────
    STATIC DATA
 ───────────────────────────────────────────── */
-
 const CULTURE_PILLARS = [
     {
         num: "01",
@@ -35,333 +33,256 @@ const CULTURE_PILLARS = [
         num: "03",
         title: "Holistic Approach",
         body: "Architecture, interiors, landscape, and planning integrated under one roof. We balance design innovation with practical execution.",
-    }
+    },
 ];
 
 const STUDIO_FACTS = [
-    { value: "301", label: "Oracle Business Park", sub: "Thane West, Maharashtra" },
-    { value: "8+", label: "Years Experience", sub: "Architecture & Design" },
-    { value: "4", label: "Core Services", sub: "Arch · Interiors · Landscape · Planning" },
-];
-
-const ENVIRONMENT_QUALITIES = [
-    "Simple",
-    "Functional",
-    "Thoughtfully Curated",
-    "Context-driven",
-];
-
-// Default gallery layout if no images are passed
-const DEFAULT_GALLERY: GalleryImage[] = [
-    { label: "Design Studio", sublabel: "Work in Progress", aspect: "tall" },
-    { label: "Collaboration Zone", sublabel: "Open Plan", aspect: "square" },
-    { label: "Meeting Room", sublabel: "Review Space", aspect: "square" },
-    { label: "Client Lounge", sublabel: "Reception & Waiting", aspect: "wide" },
+    { value: "8+", label: "Years of practice across architecture, interiors & landscape." },
+    { value: "4", label: "Core disciplines under one roof." },
+    { value: "301", label: "Oracle Business Park, our home base in Thane West." },
 ];
 
 /* ─────────────────────────────────────────────
    HELPERS
 ───────────────────────────────────────────── */
 
-function SectionLabel({ text }: { text: string }) {
+
+function Eyebrow({ index, label }: { index: string; label: string }) {
     return (
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-center gap-4 mb-6">
             <div className="h-[1px] w-8 md:w-16 bg-brand-border" />
-            <span className="text-brand-green text-[10px] uppercase tracking-[0.3em] font-bold">
-                {text}
+            <span className="text-brand-green text-[10px] uppercase tracking-[0.4em] font-bold">
+                {index} — {label}
             </span>
             <div className="h-[1px] flex-1 bg-brand-border/30" />
         </div>
     );
 }
 
-function MagneticCursor() {
-    const cursorX = useMotionValue(-100);
-    const cursorY = useMotionValue(-100);
-    const springX = useSpring(cursorX, { damping: 25, stiffness: 200 });
-    const springY = useSpring(cursorY, { damping: 25, stiffness: 200 });
-
-    useEffect(() => {
-        const move = (e: MouseEvent) => {
-            cursorX.set(e.clientX - 8);
-            cursorY.set(e.clientY - 8);
-        };
-        window.addEventListener("mousemove", move);
-        return () => window.removeEventListener("mousemove", move);
-    }, []);
-
+function Divider() {
     return (
-        <motion.div
-            className="fixed top-0 left-0 w-4 h-4 rounded-full border border-brand-green pointer-events-none z-[9999] mix-blend-difference"
-            style={{ x: springX, y: springY }}
-        />
+        <div className="max-w-7xl mx-auto px-6 md:px-24">
+            <div className="h-[1px] w-full bg-brand-border/20" />
+        </div>
     );
 }
 
 /* ─────────────────────────────────────────────
-   SECTION 1 — HERO
+   SECTION 1 — HERO (full-bleed editorial)
 ───────────────────────────────────────────── */
 function HeroSection() {
     const ref = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-    const y = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-    const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-
     return (
-        <div ref={ref} className="relative min-h-[90vh] flex flex-col justify-end pb-24 mb-0 overflow-hidden">
-            <motion.div
-                style={{ y, opacity }}
-                className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
-            >
-                <span
-                    className="text-[18vw] font-display font-medium tracking-tighter text-brand-border/10 leading-none whitespace-nowrap"
-                    aria-hidden
-                >
-                    RS & ASSOC.
-                </span>
-            </motion.div>
+        <div ref={ref} className="relative flex flex-col items-center justify-center overflow-hidden">
+            {/* Headline */}
+            <div className="relative z-10 flex flex-col items-center text-center">
 
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.4, duration: 1 }}
-                className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3"
-            >
-                <div className="h-16 w-[1px] bg-brand-border/40 relative overflow-hidden">
-                    <motion.div
-                        className="absolute top-0 left-0 w-full bg-brand-green"
-                        animate={{ height: ["0%", "100%", "0%"], top: ["0%", "0%", "100%"] }}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                    />
-                </div>
-                <span className="text-brand-text/20 text-[9px] uppercase tracking-[0.3em] rotate-90 origin-center translate-y-4">
-                    Scroll
-                </span>
-            </motion.div>
-
-            <div className="max-w-7xl mx-auto w-full relative z-10">
                 <motion.div
-                    initial={{ opacity: 0, y: 60 }}
+                    initial={{ opacity: 0, y: 70 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col items-center"
                 >
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="h-[1px] w-8 md:w-16 bg-brand-border" />
-                        <span className="text-brand-green text-[10px] uppercase tracking-[0.3em] font-bold">
-                            Rushikesh Sutar & Associates
-                        </span>
+                    <div className="flex items-center justify-center gap-4 mb-6">
+                        <div className="h-[1px] w-12 bg-brand-border" />
+                        <span className="text-brand-green text-[10px] uppercase tracking-[0.6em] font-bold">Behind the scenes</span>
+                        <div className="h-[1px] w-12 bg-brand-border" />
                     </div>
-
-                    <h1 className="text-[11vw] sm:text-[9vw] md:text-[7vw] font-display font-medium tracking-tighter leading-[0.88]">
-                        DESIGNING
-                        <br />
-                        <span className="text-brand-green italic serif">THOUGHTFUL</span> SPACES
+                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-medium tracking-tighter leading-[0.9] mb-6 uppercase">
+                        A STUDIO <br className="md:hidden" />
+                        <span className="text-brand-green italic serif">BUILT FOR</span><br />
+                        THOUGHTFUL DESIGN.
                     </h1>
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
+                    transition={{ delay: 0.35, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-xs md:text-sm font-light text-brand-text/50 leading-relaxed max-w-2xl mb-10"
                 >
-                    <p className="text-brand-text/50 text-sm md:text-base font-light leading-relaxed max-w-md">
-                        A collaborative environment where ideas are explored, designs are refined, and projects come to life.
-                    </p>
-
-                    <div className="flex flex-wrap gap-3">
-                        {ENVIRONMENT_QUALITIES.map((q, i) => (
-                            <motion.span
-                                key={q}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.5 + i * 0.07, duration: 0.5 }}
-                                className="text-[10px] text-brand-text/40 border border-brand-border/30 rounded-full px-4 py-1.5 uppercase tracking-[0.15em] font-medium hover:border-brand-green/40 hover:text-brand-green/70 transition-colors duration-500 cursor-default"
-                            >
-                                {q}
-                            </motion.span>
-                        ))}
-                    </div>
-                </motion.div>
+                    Where ideas are explored, designs are refined, and projects come to life — one considered detail at a time.
+                </motion.p>
             </div>
         </div>
     );
 }
 
 /* ─────────────────────────────────────────────
-   SECTION 2 — GALLERY (DYNAMIC MASONRY/BENTO)
+   ROW COMPONENT — alternating image + text
 ───────────────────────────────────────────── */
-function GallerySection({ images = DEFAULT_GALLERY }: { images?: GalleryImage[] }) {
+type RowProps = {
+    index: string;
+    eyebrow: string;
+    heading: React.ReactNode;
+    body: React.ReactNode;
+    imageSrc?: string;
+    imagePlaceholder?: string;
+    imageAspect?: "portrait" | "landscape";
+    reverse?: boolean;
+    accentLine?: string;
+};
 
-    // Helper to map aspect ratio strings to Tailwind grid spans
-    const getGridSpan = (aspect: string) => {
-        switch (aspect) {
-            case "tall":
-                return "col-span-1 row-span-2";
-            case "wide":
-                return "col-span-1 md:col-span-2 row-span-1";
-            case "square":
-            default:
-                return "col-span-1 row-span-1";
-        }
-    };
+function StudioRow({
+    index,
+    eyebrow,
+    heading,
+    body,
+    imageSrc,
+    imagePlaceholder,
+    imageAspect = "portrait",
+    reverse = false,
+    accentLine,
+}: RowProps) {
+    const ref = useRef<HTMLDivElement>(null);
 
     return (
-        <section className="max-w-7xl mx-auto mb-16">
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true, margin: "-80px" }}
-                className="mb-10"
+        <section ref={ref} className="max-w-7xl mx-auto py-10">
+            <div
+                className={cn(
+                    "flex flex-col gap-12 md:gap-0 md:grid md:items-center",
+                    imageAspect === "portrait"
+                        ? "md:grid-cols-[42%_1fr]"
+                        : "md:grid-cols-[55%_1fr]",
+                    reverse && "md:[&>*:first-child]:order-2 md:[&>*:last-child]:order-1"
+                )}
             >
-                <SectionLabel text="The Studio" />
-                <h2 className="text-4xl md:text-5xl font-display font-medium tracking-tighter leading-[1.05]">
-                    Where design <span className="text-brand-green italic">happens</span>.
-                </h2>
-            </motion.div>
-
-            {/* Added grid-flow-dense so odd-shaped images pack neatly without gaps */}
-            <div className="grid grid-cols-2 md:grid-cols-3 auto-rows-[280px] grid-flow-dense gap-4">
-                {images.map((img, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: i * 0.1 }}
-                        viewport={{ once: true }}
-                        className={cn(
-                            "group relative rounded-2xl overflow-hidden border border-brand-border/30 hover:border-brand-green/40 transition-colors duration-700",
-                            getGridSpan(img.aspect)
-                        )}
-                    >
-                        {img.src ? (
-                            <img
-                                src={img.src}
-                                alt={img.label}
-                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-                            />
-                        ) : (
-                            <StudioPlaceholder label={img.sublabel || img.label} />
-                        )}
-                        <GalleryOverlay
-                            label={img.label}
-                            index={String(i + 1).padStart(2, "0")}
+                {/* ── IMAGE PANEL ── */}
+                <motion.div
+                    initial={{ opacity: 0, x: reverse ? 40 : -40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    className={cn(
+                        "relative rounded-2xl overflow-hidden border border-brand-border/20 group",
+                        imageAspect === "portrait" ? "aspect-[3/4]" : "aspect-[16/10]",
+                        reverse ? "md:ml-16" : "md:mr-16"
+                    )}
+                >
+                    {imageSrc ? (
+                        <img
+                            src={imageSrc}
+                            alt={eyebrow}
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
                         />
-                    </motion.div>
-                ))}
+                    ) : (
+                        <div className="w-full h-full bg-brand-border/5 group-hover:bg-brand-green/5 transition-colors duration-700 flex items-end p-8">
+                            <span className="text-brand-text/10 text-[10px] uppercase tracking-[0.3em]">
+                                {imagePlaceholder}
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Corner index badge */}
+                    <div className="absolute top-5 right-5 w-9 h-9 rounded-full border border-brand-border/30 bg-brand-background/60 backdrop-blur-sm flex items-center justify-center">
+                        <span className="text-brand-green text-[10px] font-bold">{index}</span>
+                    </div>
+
+                    {/* Bottom green bar on hover */}
+                    <motion.div
+                        className="absolute bottom-0 left-0 w-full h-[2px] bg-brand-green origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700"
+                    />
+                </motion.div>
+
+                {/* ── TEXT PANEL ── */}
+                <motion.div
+                    initial={{ opacity: 0, x: reverse ? -40 : 40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 1, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    className="flex flex-col justify-center"
+                >
+                    <Eyebrow index={index} label={eyebrow} />
+
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-medium tracking-tighter leading-[1.06] mb-6 text-brand-text">
+                        {heading}
+                    </h2>
+
+                    {accentLine && (
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="h-[1px] w-6 bg-brand-green/40" />
+                            <span className="text-brand-green/60 text-xs italic font-light">{accentLine}</span>
+                        </div>
+                    )}
+
+                    <div className="text-brand-text/45 text-sm md:text-base font-light leading-relaxed space-y-4">
+                        {body}
+                    </div>
+                </motion.div>
             </div>
         </section>
     );
 }
 
-function StudioPlaceholder({ label }: { label: string }) {
-    return (
-        <div className="w-full h-full bg-brand-border/5 flex items-center justify-center group-hover:bg-brand-green/5 transition-colors duration-700">
-            <span className="text-brand-text/10 text-[10px] uppercase tracking-[0.3em] font-medium z-10 text-center px-4">
-                {label}
-            </span>
-        </div>
-    );
-}
-
-function GalleryOverlay({ label, index }: { label: string; index: string }) {
-    return (
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6 bg-gradient-to-t from-black/60 to-transparent">
-            <div className="flex items-end justify-between w-full">
-                <span className="text-white/90 text-sm font-display font-medium">{label}</span>
-                <span className="text-brand-green/70 text-[10px] font-bold">{index}</span>
-            </div>
-        </div>
-    );
-}
-
 /* ─────────────────────────────────────────────
-   SECTION 3 — MARQUEE
+   SECTION — MARQUEE DIVIDER
 ───────────────────────────────────────────── */
 function MarqueeSection() {
-    const text = ["Architecture", "Interiors", "Landscape", "Planning"];
-
+    const words = ["Architecture", "Interiors", "Landscape", "Planning"];
     return (
-        <section className="mb-16 border-y border-brand-border/20 py-6 overflow-hidden relative">
+        <div className="border-y border-brand-border/15 py-5 overflow-hidden">
             <motion.div
                 animate={{ x: [0, "-50%"] }}
-                transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                className="flex gap-12 whitespace-nowrap w-max"
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="flex gap-10 whitespace-nowrap w-max"
             >
-                {[...text, ...text, ...text, ...text].map((word, i) => (
-                    <span key={i} className="flex items-center gap-12">
-                        <span className={cn("text-2xl md:text-3xl font-display font-medium tracking-tighter", i % 2 === 0 ? "text-brand-green italic" : "text-brand-text/20")}>
-                            {word}
+                {[...words, ...words, ...words, ...words].map((w, i) => (
+                    <span key={i} className="flex items-center gap-10">
+                        <span className={cn("text-xl md:text-2xl font-display font-medium tracking-tighter",
+                            i % 2 === 0 ? "text-brand-text/15" : "text-brand-green/40 italic"
+                        )}>
+                            {w}
                         </span>
-                        <span className="text-brand-border/40 text-lg">◆</span>
+                        <span className="text-brand-border/30 text-base">◆</span>
                     </span>
                 ))}
             </motion.div>
-        </section>
+        </div>
     );
 }
 
 /* ─────────────────────────────────────────────
-   SECTION 4 — PHILOSOPHY
-───────────────────────────────────────────── */
-function PhilosophySection() {
-    return (
-        <section className="max-w-7xl mx-auto mb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-16 lg:gap-24">
-                <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.9 }} viewport={{ once: true }} className="flex flex-col justify-between">
-                    <div>
-                        <SectionLabel text="Our Philosophy" />
-                        <div className="border-l-2 border-brand-green pl-8 mt-8">
-                            <blockquote className="text-3xl md:text-4xl font-display font-medium tracking-tighter leading-[1.15] text-brand-text/80">
-                                "Our studio is a reflection of our design philosophy—<span className="text-brand-green italic">simple</span>, <span className="text-brand-green italic">functional</span>, and thoughtfully curated."
-                            </blockquote>
-                        </div>
-                    </div>
-
-                    <motion.div className="mt-12 border border-brand-border/30 rounded-2xl p-6 group">
-                        <span className="text-brand-green text-[10px] uppercase tracking-[0.3em] font-bold block mb-3">Find Us</span>
-                        <p className="text-brand-text/60 text-sm leading-relaxed font-light">
-                            Oracle Business Park, 301<br />Plot No A-179, Road No. 16/Z<br />Wagle Industrial Estate, Thane West<br />Maharashtra – 400604
-                        </p>
-                    </motion.div>
-                </motion.div>
-
-                <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.9 }} viewport={{ once: true }}>
-                    <SectionLabel text="The Workspace" />
-                    <div className="space-y-5 text-brand-text/50 text-sm md:text-base leading-relaxed font-light mb-12">
-                        <p>It is not just a workspace, but a collaborative environment where ideas are explored, designs are refined, and projects come to life. Every zone is purposefully designed for the work it hosts.</p>
-                        <p>We believe the studio should be as much a source of inspiration as it is a place of production. The environment shapes the thinking. The thinking shapes the work.</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        {STUDIO_FACTS.map((fact, i) => (
-                            <motion.div key={fact.label} className="border border-brand-border/20 rounded-xl p-5 group hover:border-brand-green/30 hover:bg-brand-green/5 transition-all duration-500">
-                                <span className="text-3xl font-display font-medium tracking-tighter text-brand-text group-hover:text-brand-green block mb-1">{fact.value}</span>
-                                <span className="text-brand-text/60 text-xs font-medium block mb-1">{fact.label}</span>
-                                <span className="text-brand-text/25 text-[10px] font-light block">{fact.sub}</span>
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
-            </div>
-        </section>
-    );
-}
-
-/* ─────────────────────────────────────────────
-   SECTION 5 — CULTURE & PROCESS
+   SECTION — CULTURE PILLARS (inline text row)
 ───────────────────────────────────────────── */
 function CultureSection() {
     return (
-        <section className="max-w-7xl mx-auto mb-16">
-            <SectionLabel text="Work Culture" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-brand-border/20 border border-brand-border/20 rounded-2xl overflow-hidden mt-8">
+        <section className="max-w-7xl mx-auto py-20 md:py-28">
+            <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9 }}
+                viewport={{ once: true }}
+                className="mb-14"
+            >
+                <Eyebrow index="04" label="Work Culture" />
+                <h2 className="text-3xl md:text-5xl font-display font-medium tracking-tighter leading-[1.05]">
+                    How we work,<br />
+                    <span className="text-brand-green italic">every day</span>.
+                </h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-brand-border/15 border border-brand-border/15 rounded-2xl overflow-hidden">
                 {CULTURE_PILLARS.map((pillar, i) => (
-                    <motion.div key={pillar.num} className="bg-brand-background p-8 group hover:bg-brand-green/5 transition-colors duration-500">
-                        <span className="text-brand-green/20 font-display text-4xl font-medium tracking-tighter group-hover:text-brand-green/50 block mb-4">{pillar.num}</span>
-                        <h3 className="text-brand-text font-display font-medium text-xl mb-3">{pillar.title}</h3>
-                        <p className="text-brand-text/40 text-sm font-light">{pillar.body}</p>
+                    <motion.div
+                        key={pillar.num}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: i * 0.1 }}
+                        viewport={{ once: true }}
+                        className="bg-brand-background px-8 py-10 group hover:bg-brand-green/5 transition-colors duration-500"
+                    >
+                        <div className="flex items-start justify-between mb-6">
+                            <span className="text-brand-green/20 font-display text-5xl font-medium tracking-tighter group-hover:text-brand-green/40 transition-colors duration-500">
+                                {pillar.num}
+                            </span>
+                            <div className="h-[1px] w-8 bg-brand-border/30 mt-4" />
+                        </div>
+                        <h3 className="text-brand-text font-display font-medium text-lg mb-3 tracking-tight">
+                            {pillar.title}
+                        </h3>
+                        <p className="text-brand-text/35 text-sm font-light leading-relaxed">
+                            {pillar.body}
+                        </p>
                     </motion.div>
                 ))}
             </div>
@@ -370,22 +291,95 @@ function CultureSection() {
 }
 
 /* ─────────────────────────────────────────────
-   SECTION 6 — CONTACT & CTA
+   SECTION — STUDIO FACTS (stat row)
 ───────────────────────────────────────────── */
-function ContactAndCTA() {
+function FactsSection() {
     return (
-        <section className="max-w-7xl mx-auto mb-16 space-y-16">
-            <div className="border border-brand-border/30 rounded-2xl overflow-hidden">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-brand-border/20">
-                    <a href="tel:02269309273" className="bg-brand-background p-8 group hover:bg-brand-green/5 transition-colors duration-500">
-                        <span className="text-brand-text/30 text-[10px] uppercase tracking-[0.2em] font-medium block mb-2">Phone</span>
-                        <span className="text-brand-text/70 text-sm font-light group-hover:text-brand-green">022-69309273</span>
+        <div className="max-w-7xl mx-auto pb-20">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {STUDIO_FACTS.map((fact, i) => (
+                    <motion.div
+                        key={fact.value}
+                        initial={{ opacity: 0, y: 16 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: i * 0.1 }}
+                        viewport={{ once: true }}
+                        className="group border border-brand-border/20 rounded-xl px-8 py-8 hover:border-brand-green/30 hover:bg-brand-green/5 transition-all duration-500"
+                    >
+                        <span className="text-5xl font-display font-medium tracking-tighter text-brand-text group-hover:text-brand-green transition-colors duration-500 block mb-3">
+                            {fact.value}
+                        </span>
+                        <p className="text-brand-text/35 text-sm font-light leading-snug">{fact.label}</p>
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION — CONTACT FOOTER ROW
+───────────────────────────────────────────── */
+function ContactRow() {
+    return (
+        <section className="max-w-7xl mx-auto py-20 md:py-28">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-12">
+                <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.9 }}
+                    viewport={{ once: true }}
+                >
+                    <Eyebrow index="05" label="Get In Touch" />
+                    <h2 className="text-4xl md:text-6xl font-display font-medium tracking-tighter leading-[0.95]">
+                        Let's build<br />
+                        <span className="text-brand-green italic">something</span><br />
+                        together.
+                    </h2>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.9, delay: 0.15 }}
+                    viewport={{ once: true }}
+                    className="flex flex-col gap-3"
+                >
+                    <a
+                        href="tel:02269309273"
+                        className="group flex items-center gap-4 border border-brand-border/20 rounded-xl px-7 py-5 hover:border-brand-green/40 hover:bg-brand-green/5 transition-all duration-500"
+                    >
+                        <div>
+                            <span className="text-brand-text/25 text-[9px] uppercase tracking-[0.25em] font-medium block mb-0.5">Phone</span>
+                            <span className="text-brand-text/60 text-sm font-light group-hover:text-brand-green transition-colors duration-400">
+                                022-69309273
+                            </span>
+                        </div>
+                        <span className="ml-auto text-brand-border/30 group-hover:text-brand-green/50 text-lg transition-colors duration-400">↗</span>
                     </a>
-                    <a href="mailto:rushikesh@rsandassociates.co.in" className="bg-brand-background p-8 group hover:bg-brand-green/5 transition-colors duration-500">
-                        <span className="text-brand-text/30 text-[10px] uppercase tracking-[0.2em] font-medium block mb-2">Email</span>
-                        <span className="text-brand-text/70 text-sm font-light group-hover:text-brand-green">rushikesh@rsandassociates.co.in</span>
+
+                    <a
+                        href="mailto:rushikesh@rsandassociates.co.in"
+                        className="group flex items-center gap-4 border border-brand-border/20 rounded-xl px-7 py-5 hover:border-brand-green/40 hover:bg-brand-green/5 transition-all duration-500"
+                    >
+                        <div>
+                            <span className="text-brand-text/25 text-[9px] uppercase tracking-[0.25em] font-medium block mb-0.5">Email</span>
+                            <span className="text-brand-text/60 text-sm font-light group-hover:text-brand-green transition-colors duration-400">
+                                rushikesh@rsandassociates.co.in
+                            </span>
+                        </div>
+                        <span className="ml-auto text-brand-border/30 group-hover:text-brand-green/50 text-lg transition-colors duration-400">↗</span>
                     </a>
-                </div>
+
+                    <div className="border border-brand-border/20 rounded-xl px-7 py-5">
+                        <span className="text-brand-text/25 text-[9px] uppercase tracking-[0.25em] font-medium block mb-0.5">Address</span>
+                        <p className="text-brand-text/45 text-sm font-light leading-relaxed">
+                            Oracle Business Park, 301<br />
+                            Wagle Industrial Estate<br />
+                            Thane West – 400604
+                        </p>
+                    </div>
+                </motion.div>
             </div>
         </section>
     );
@@ -394,49 +388,133 @@ function ContactAndCTA() {
 /* ─────────────────────────────────────────────
    PAGE ROOT
 ───────────────────────────────────────────── */
-const images: GalleryImage[] = [
-    {
-        src: "/design-studio.png",
-        label: "Design Studio",
-        sublabel: "Work in Progress",
-        aspect: "tall",
-    },
-    {
-        src: "/meeting-room.png",
-        label: "Meeting Room",
-        sublabel: "Discussion Space",
-        aspect: "square",
-    },
-    {
-        src: "/review-space.png",
-        label: "Review Space",
-        sublabel: "Design Reviews",
-        aspect: "square",
-    },
-    {
-        src: "/client-lounge.png",
-        label: "Client Lounge",
-        sublabel: "Reception Area",
-        aspect: "wide",
-    },
-];
-
 export default function StudioPage() {
     return (
-        <div className="min-h-screen pt-32 pb-6 px-6 md:px-24 relative bg-brand-background">
+        <div className="min-h-screen pt-24 pb-6 px-6 md:px-24 relative bg-brand-background">
             <GridPattern
-                squares={[[4, 4], [5, 1], [8, 2], [10, 10], [12, 15], [15, 10]]}
-                className={cn("[mask-image:linear-gradient(to_bottom,white_80%,transparent)]", "fixed inset-0 z-0 w-screen h-screen opacity-50 pointer-events-none")}
+                squares={[
+                    [4, 4], [5, 1], [8, 2], [5, 3], [5, 5],
+                    [10, 10], [12, 15], [15, 10], [10, 15],
+                    [15, 10], [10, 15], [15, 10],
+                ]}
+                className={cn(
+                    "[mask-image:linear-gradient(to_bottom,white_80%,transparent)]",
+                    "fixed inset-0 z-0 w-screen h-screen opacity-50 pointer-events-none"
+                )}
             />
-            <MagneticCursor />
 
             <div className="relative z-10">
+                {/* ── HERO ── */}
                 <HeroSection />
-                <GallerySection images={images} />
-                <MarqueeSection />
-                <PhilosophySection />
-                <CultureSection />
-                <ContactAndCTA />
+
+                <StudioRow
+                    index="01"
+                    eyebrow="The Studio"
+                    heading={<>Where design<br /><span className="text-brand-green italic">happens</span>.</>}
+                    accentLine="Oracle Business Park, Thane West"
+                    body={
+                        <>
+                            <p>
+                                Our studio is more than a workspace — it is a living environment shaped
+                                by the same principles we bring to every project: simplicity,
+                                functionality, and thoughtful curation.
+                            </p>
+                            <p>
+                                Every corner is purposefully designed for the work it hosts. Drawing
+                                tables, model-making zones, and client review spaces each carry their own
+                                character while reading as one cohesive whole.
+                            </p>
+                        </>
+                    }
+                    imageSrc="/design-studio.png"
+                    imagePlaceholder="Design Studio Interior"
+                    imageAspect="portrait"
+                    reverse={false}
+                />
+
+
+                {/* ── ROW 2: The Philosophy — text left, image right ── */}
+                <StudioRow
+                    index="02"
+                    eyebrow="Our Philosophy"
+                    heading={<>Simple. Functional.<br /><span className="text-brand-green italic">Thoughtfully curated.</span></>}
+                    accentLine="Context-driven design at every scale"
+                    body={
+                        <>
+                            <p>
+                                We believe the studio should be as much a source of inspiration as it
+                                is a place of production. The environment shapes the thinking. The
+                                thinking shapes the work.
+                            </p>
+                            <p>
+                                Architecture, interiors, landscape, and planning converge here — not as
+                                separate disciplines, but as dimensions of a single, holistic practice.
+                            </p>
+                            <blockquote className="border-l-2 border-brand-green/40 pl-5 mt-2 text-brand-text/30 italic text-xs">
+                                "The studio is a reflection of our design philosophy — simple, functional, and thoughtfully curated."
+                            </blockquote>
+                        </>
+                    }
+                    imageSrc="/meeting-room.png"
+                    imagePlaceholder="Meeting Room"
+                    imageAspect="portrait"
+                    reverse={true}
+                />
+
+
+                {/* ── ROW 3: Collaboration Zone — image left, text right ── */}
+                <StudioRow
+                    index="03"
+                    eyebrow="How We Work"
+                    heading={<>Built around<br /><span className="text-brand-green italic">collaboration</span>,<br />not hierarchy.</>}
+                    body={
+                        <>
+                            <p>
+                                The open-plan studio is designed to dissolve silos. Architects, interior
+                                designers, landscape planners, and project managers share the same floor,
+                                the same light, and the same creative energy.
+                            </p>
+                            <p>
+                                Review pinboards line the walls. Physical models occupy the tables.
+                                Ideas are tested, questioned, and refined in the open — not behind
+                                closed doors.
+                            </p>
+                        </>
+                    }
+                    imageSrc="/review-space.png"
+                    imagePlaceholder="Collaboration & Review Space"
+                    imageAspect="landscape"
+                    reverse={false}
+                />
+
+
+
+
+                {/* ── ROW 4: Client Experience — image right, text left ── */}
+                <StudioRow
+                    index="04"
+                    eyebrow="Client Experience"
+                    heading={<>A space where<br />clients feel<br /><span className="text-brand-green italic">at home</span>.</>}
+                    accentLine="Designed for dialogue, not just presentation"
+                    body={
+                        <>
+                            <p>
+                                The client lounge and meeting spaces are crafted as extensions of our
+                                design philosophy — warm, considered, and free of clutter. Conversations
+                                here feel natural, not formal.
+                            </p>
+                            <p>
+                                Every project begins with listening. Our reception and review areas are
+                                set up for exactly that: unhurried conversation, material exploration,
+                                and collaborative decision-making.
+                            </p>
+                        </>
+                    }
+                    imageSrc="/client-lounge.png"
+                    imagePlaceholder="Client Lounge"
+                    imageAspect="portrait"
+                    reverse={true}
+                />
             </div>
         </div>
     );
