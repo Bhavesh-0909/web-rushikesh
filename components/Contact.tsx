@@ -1,8 +1,41 @@
+'use client'
 import { ArrowRight, MapPin, Phone, Mail } from 'lucide-react';
 import { GridPattern } from "@/components/ui/grid-pattern";
 import { cn } from "@/lib/utils";
+import emailjs from '@emailjs/browser';
+import { useRef, useState } from 'react';
+
+const SERVICE_ID  = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
+const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!;
+const PUBLIC_KEY  = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
+
+type Status = 'idle' | 'sending' | 'success' | 'error';
 
 export const Contact = () => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [status, setStatus] = useState<Status>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formRef.current) return;
+
+    setStatus('sending');
+    try {
+      await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY);
+      setStatus('success');
+      formRef.current.reset();
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  const buttonLabel = {
+    idle:    'Submit Enquiry',
+    sending: 'Sending...',
+    success: 'Sent Successfully ✓',
+    error:   'Failed — Try Again',
+  }[status];
+
   return (
     <section id="contact" className="relative pt-24 pb-12 md:pt-24 md:pb-16 px-6 md:px-24 border-t border-brand-border z-20 min-h-screen bg-brand-background text-brand-text overflow-hidden">
       <GridPattern
@@ -64,37 +97,81 @@ export const Contact = () => {
         <div className="glass p-8 md:p-16 rounded-[40px] relative overflow-hidden flex flex-col justify-center mt-12 lg:mt-0">
           <div className="relative z-10">
             <h3 className="text-3xl font-display font-medium tracking-tight mb-10">Quick Inquiry</h3>
-            <form className="space-y-10">
+
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="space-y-3">
                   <label className="text-[10px] uppercase tracking-widest font-bold text-brand-green">Full Name</label>
-                  <input type="text" className="w-full bg-transparent border-b border-brand-border py-4 focus:border-brand-green outline-none transition-colors cursor-none" placeholder="architectural vision" />
+                  <input
+                    type="text"
+                    name="from_name"
+                    required
+                    className="w-full bg-transparent border-b border-brand-border py-4 focus:border-brand-green outline-none transition-colors cursor-none"
+                    placeholder="architectural vision"
+                  />
                 </div>
                 <div className="space-y-3">
                   <label className="text-[10px] uppercase tracking-widest font-bold text-brand-green">Email ID</label>
-                  <input type="email" className="w-full bg-transparent border-b border-brand-border py-4 focus:border-brand-green outline-none transition-colors cursor-none" placeholder="digital mail" />
+                  <input
+                    type="email"
+                    name="from_email"
+                    required
+                    className="w-full bg-transparent border-b border-brand-border py-4 focus:border-brand-green outline-none transition-colors cursor-none"
+                    placeholder="digital mail"
+                  />
                 </div>
               </div>
+
               <div className="space-y-3">
                 <label className="text-[10px] uppercase tracking-widest font-bold text-brand-green">Project Type</label>
-                <select className="w-full bg-transparent border-b border-brand-border py-4 focus:border-brand-green outline-none transition-colors appearance-none cursor-none text-brand-text">
+                <select
+                  name="project_type"
+                  className="w-full bg-transparent border-b border-brand-border py-4 focus:border-brand-green outline-none transition-colors appearance-none cursor-none text-brand-text"
+                >
                   <option className="bg-brand-background">Residential</option>
                   <option className="bg-brand-background">Commercial</option>
                   <option className="bg-brand-background">Interiors</option>
                   <option className="bg-brand-background">Others</option>
                 </select>
               </div>
+
               <div className="space-y-3">
                 <label className="text-[10px] uppercase tracking-widest font-bold text-brand-green">Message</label>
-                <textarea rows={4} className="w-full bg-transparent border-b border-brand-border py-4 focus:border-brand-green outline-none transition-colors cursor-none resize-none" placeholder="Tell us about the space..."></textarea>
+                <textarea
+                  rows={4}
+                  name="message"
+                  required
+                  className="w-full bg-transparent border-b border-brand-border py-4 focus:border-brand-green outline-none transition-colors cursor-none resize-none"
+                  placeholder="Tell us about the space..."
+                />
               </div>
-              <button className="group w-full bg-brand-green text-white font-display font-medium uppercase tracking-[0.3em] text-xs py-7 rounded-full flex items-center justify-center gap-4 hover:bg-brand-text transition-all duration-700 cursor-none shadow-xl">
-                Submit Enquiry <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
+
+              {/* Success / Error feedback */}
+              {status === 'success' && (
+                <p className="text-brand-green text-[11px] uppercase tracking-widest">
+                  Thank you! We'll be in touch shortly.
+                </p>
+              )}
+              {status === 'error' && (
+                <p className="text-red-400 text-[11px] uppercase tracking-widest">
+                  Something went wrong. Please try again or email us directly.
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === 'sending' || status === 'success'}
+                className="group w-full bg-brand-green text-white font-display font-medium uppercase tracking-[0.3em] text-xs py-7 rounded-full flex items-center justify-center gap-4 hover:bg-brand-text transition-all duration-700 cursor-none shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {buttonLabel}
+                {status === 'idle' && (
+                  <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
+                )}
               </button>
             </form>
           </div>
 
-          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-green/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-green/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2" />
         </div>
       </div>
     </section>
