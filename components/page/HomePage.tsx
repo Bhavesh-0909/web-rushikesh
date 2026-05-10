@@ -12,7 +12,13 @@ import { Stats, Clients, Awards } from '../OtherSections';
 import Experience3D from '../Experience3D';
 import Mobile3D from '../Mobile3d';
 
-export default function HomePage() {
+interface HomePageProps {
+  projects?: any[];
+  testimonials?: any[];
+  teamMembers?: any[];
+}
+
+export default function HomePage({ projects, testimonials, teamMembers }: HomePageProps) {
   const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
@@ -40,9 +46,9 @@ export default function HomePage() {
       <Clients />
       <Awards />
       <About />
-      <Projects />
-      <Testimonials />
-      <Team />
+      <Projects initialProjects={projects} />
+      <Testimonials initialTestimonials={testimonials} />
+      <Team initialTeamMembers={teamMembers} />
       <Instagram />
     </main>
   );

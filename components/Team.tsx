@@ -2,12 +2,17 @@ import { motion } from 'motion/react';
 import { teamData } from '../app/data/home.data';
 import { useRouter } from 'next/navigation';
 
-export const Team = () => {
+export const Team = ({ initialTeamMembers }: { initialTeamMembers?: any[] }) => {
   const showAll: boolean = false;
   const router = useRouter();
   const navigate = () => {
     router.push('/about/#team')
   }
+
+  const displayedTeam = initialTeamMembers && initialTeamMembers.length > 0
+    ? initialTeamMembers
+    : teamData;
+
   return (
     <section id="team" className="relative px-6 md:px-24 border-y border-brand-border/30 z-20">
       <div className="flex flex-col items-center text-center mb-16 group">
@@ -28,7 +33,7 @@ export const Team = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16 lg:gap-y-32">
-        {teamData.slice(0, showAll ? teamData.length : 3).map((member, idx) => (
+        {displayedTeam.slice(0, showAll ? displayedTeam.length : 3).map((member, idx) => (
           <motion.div
             key={member.name}
             initial={{ opacity: 0, y: 30 }}
@@ -39,7 +44,7 @@ export const Team = () => {
           >
             <div className="aspect-[4/5] bg-transparent rounded-3xl overflow-hidden mb-8 relative border border-brand-border group-hover:border-brand-green transition-colors duration-700">
               <img
-                src={member.image}
+                src={member.image || member.imageurl}
                 alt={member.name}
                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
                 loading="lazy"
@@ -48,13 +53,12 @@ export const Team = () => {
             </div>
             <h3 className="text-2xl font-display font-medium tracking-tight mb-2 group-hover:text-brand-green transition-colors">{member.name}</h3>
             <p className="text-brand-green text-[10px] uppercase tracking-widest font-bold mb-6">{member.role}</p>
-            <p className="text-xs md:text-sm text-brand-text/40 max-w-xs leading-relaxed lowercase">{member.description}</p>
           </motion.div>
         ))}
       </div>
 
 
-      <div className="mt-20 flex justify-center px-6 md:px-0">
+      <div className="mt-6 flex justify-center px-6 md:px-0">
         <button
           onClick={navigate}
           className="w-full md:w-auto md:px-16 py-6 glass rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:text-brand-green transition-all cursor-none"

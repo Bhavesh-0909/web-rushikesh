@@ -5,10 +5,10 @@ import { supabase, type Testimonial } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 import AdminEditControls from './admin-edit-controls';
 
-export const Testimonials = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+export const Testimonials = ({ initialTestimonials }: { initialTestimonials?: Testimonial[] }) => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials || []);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialTestimonials || initialTestimonials.length === 0);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -17,6 +17,10 @@ export const Testimonials = () => {
     }
 
     const fetchTestimonials = async () => {
+      if (initialTestimonials && initialTestimonials.length > 0) {
+        setLoading(false);
+        return;
+      }
       if (!supabase) {
         setTestimonials(FALLBACK_TESTIMONIALS);
         setLoading(false);
@@ -37,7 +41,7 @@ export const Testimonials = () => {
     };
 
     fetchTestimonials();
-  }, []);
+  }, [initialTestimonials]);
 
   const next = () => setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   const prev = () => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
@@ -60,9 +64,6 @@ export const Testimonials = () => {
         </div>
 
         <div className="relative max-w-7xl mx-auto">
-          <div className="absolute -top-12 -left-12 opacity-5 text-brand-green pointer-events-none z-0">
-            <Quote size={200} />
-          </div>
 
           <div className={cn(
             "grid gap-8 relative z-10",

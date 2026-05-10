@@ -7,9 +7,9 @@ import AdminEditControls from './admin-edit-controls';
 import Link from 'next/link';
 import { getRecentProjects } from '@/app/project/actions';
 
-export const Projects = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+export const Projects = ({ initialProjects }: { initialProjects?: Project[] }) => {
+  const [projects, setProjects] = useState<Project[]>(initialProjects || []);
+  const [loading, setLoading] = useState(!initialProjects || initialProjects.length === 0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
 
@@ -19,6 +19,10 @@ export const Projects = () => {
     }
 
     const fetchProjects = async () => {
+      if (initialProjects && initialProjects.length > 0) {
+        setLoading(false);
+        return;
+      }
       try {
         const data = await getRecentProjects(3);
         if (data && data.length > 0) {
@@ -35,7 +39,7 @@ export const Projects = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, [initialProjects]);
 
   const filteredProjects = activeCategory === 'All'
     ? projects
@@ -70,20 +74,6 @@ export const Projects = () => {
             <div className="h-[1px] w-12 bg-brand-border" />
           </div>
           <h2 className="text-4xl md:text-6xl font-display font-medium tracking-tighter mb-12">HIGHLIGHT <span className="text-brand-green italic serif">WORKS</span></h2>
-        </div>
-        <div className="flex gap-4 justify-center flex-wrap">
-          {['All', 'Residential', 'Commercial', 'Liaisoning'].map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={cn(
-                "text-[9px] uppercase font-bold tracking-[0.2em] px-10 py-4 glass rounded-full transition-all cursor-none",
-                activeCategory === cat ? "bg-brand-green text-brand-green" : "hover:bg-brand-green hover:text-brand-green"
-              )}
-            >
-              {cat}
-            </button>
-          ))}
         </div>
       </div>
 
