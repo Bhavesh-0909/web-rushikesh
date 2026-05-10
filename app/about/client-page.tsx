@@ -327,71 +327,71 @@ function ServicesSection() {
 /* ─────────────────────────────────────────────
    TIMELINE
 ───────────────────────────────────────────── */
-function TimelineSection() {
-  return (
-    <section className="max-w-7xl mx-auto mb-16">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true, margin: "-80px" }}
-        className="mb-12"
-      >
-        <SectionLabel text="Our Journey" />
-        <h2 className="text-4xl md:text-5xl font-display font-medium tracking-tighter leading-[1.05]">
-          A decade in{" "}
-          <span className="text-brand-green italic">the making</span>.
-        </h2>
-      </motion.div>
+// function TimelineSection() {
+//   return (
+//     <section className="max-w-7xl mx-auto mb-16">
+//       <motion.div
+//         initial={{ opacity: 0, y: 30 }}
+//         whileInView={{ opacity: 1, y: 0 }}
+//         transition={{ duration: 0.8 }}
+//         viewport={{ once: true, margin: "-80px" }}
+//         className="mb-12"
+//       >
+//         <SectionLabel text="Our Journey" />
+//         <h2 className="text-4xl md:text-5xl font-display font-medium tracking-tighter leading-[1.05]">
+//           A decade in{" "}
+//           <span className="text-brand-green italic">the making</span>.
+//         </h2>
+//       </motion.div>
 
-      <div className="relative">
-        {/* Vertical line */}
-        <div className="absolute left-[18px] top-0 bottom-0 w-[1px] bg-brand-border/40 md:left-1/2" />
+//       <div className="relative">
+//         {/* Vertical line */}
+//         <div className="absolute left-[18px] top-0 bottom-0 w-[1px] bg-brand-border/40 md:left-1/2" />
 
-        <div className="space-y-0">
-          {TIMELINE.map((t, i) => (
-            <motion.div
-              key={t.year}
-              initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              viewport={{ once: true, margin: "-50px" }}
-              className={cn(
-                "relative flex items-start gap-8 pb-12 md:pb-16",
-                "md:w-1/2",
-                i % 2 === 0
-                  ? "md:ml-auto md:pl-16 md:pr-0 pl-12"
-                  : "md:pr-16 md:text-right pl-12 md:pl-0"
-              )}
-            >
-              {/* Dot */}
-              <div
-                className={cn(
-                  "absolute w-3 h-3 rounded-full bg-brand-background border-2 border-brand-green top-1",
-                  "left-[13px] md:top-1",
-                  i % 2 === 0
-                    ? "md:left-[-6px]"
-                    : "md:right-[-6px] md:left-auto"
-                )}
-              />
-              <div>
-                <span className="text-brand-green text-[10px] uppercase tracking-[0.3em] font-bold block mb-1">
-                  {t.year}
-                </span>
-                <h3 className="text-brand-text font-display font-medium text-xl tracking-tight mb-2">
-                  {t.event}
-                </h3>
-                <p className="text-brand-text/40 text-sm leading-relaxed font-light max-w-xs">
-                  {t.detail}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+//         <div className="space-y-0">
+//           {TIMELINE.map((t, i) => (
+//             <motion.div
+//               key={t.year}
+//               initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+//               whileInView={{ opacity: 1, x: 0 }}
+//               transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+//               viewport={{ once: true, margin: "-50px" }}
+//               className={cn(
+//                 "relative flex items-start gap-8 pb-12 md:pb-16",
+//                 "md:w-1/2",
+//                 i % 2 === 0
+//                   ? "md:ml-auto md:pl-16 md:pr-0 pl-12"
+//                   : "md:pr-16 md:text-right pl-12 md:pl-0"
+//               )}
+//             >
+//               {/* Dot */}
+//               <div
+//                 className={cn(
+//                   "absolute w-3 h-3 rounded-full bg-brand-background border-2 border-brand-green top-1",
+//                   "left-[13px] md:top-1",
+//                   i % 2 === 0
+//                     ? "md:left-[-6px]"
+//                     : "md:right-[-6px] md:left-auto"
+//                 )}
+//               />
+//               <div>
+//                 <span className="text-brand-green text-[10px] uppercase tracking-[0.3em] font-bold block mb-1">
+//                   {t.year}
+//                 </span>
+//                 <h3 className="text-brand-text font-display font-medium text-xl tracking-tight mb-2">
+//                   {t.event}
+//                 </h3>
+//                 <p className="text-brand-text/40 text-sm leading-relaxed font-light max-w-xs">
+//                   {t.detail}
+//                 </p>
+//               </div>
+//             </motion.div>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
 
 /* ─────────────────────────────────────────────
    TEAM
@@ -399,70 +399,7 @@ function TimelineSection() {
 function TeamSection({ teamData }: { teamData: employees[] }) {
   const [active, setActive] = useState<number | null>(null);
 
-  /* fallback static team if DB is empty */
-  const STATIC_TEAM = [
-    {
-      id: 1,
-      name: "Rushikesh Sutar",
-      role: "Founder & Principal Architect",
-      imageurl: "",
-      description:
-        "B.Arch, Lokmanya Tilak Institute · 10+ years of experience. Leads all design and execution with emphasis on functionality, efficiency, and contextual relevance.",
-    },
-    {
-      id: 2,
-      name: "Grishma Sutar",
-      role: "Co-Founder",
-      imageurl: "",
-      description:
-        "B.Arch LTIADS · M.Arch Urban Design, CEPT University · 5 years. Shapes design direction through spatial planning, concept development, and urban systems thinking.",
-    },
-    {
-      id: 3,
-      name: "Harshal Sutar",
-      role: "Associate",
-      imageurl: "",
-      description:
-        "Interior Designer · 30+ years of experience · With firm since 2018. Provides the technical backbone: structural feasibility, construction quality, and on-site precision.",
-    },
-    {
-      id: 4,
-      name: "Dipesh Kotekar",
-      role: "Designer",
-      imageurl: "",
-      description:
-        "B.E. Civil, Dilkap · Master Diploma Interior Design, Excellence Design Mulund · 3 years. Bridges engineering precision with visual detailing in design development.",
-    },
-    {
-      id: 5,
-      name: "Pratiksha Lokhande",
-      role: "Interior Designer",
-      imageurl: "",
-      description:
-        "Diploma Interior Design, YCMOU Nashik · With firm since 2022. Contributes to space planning, detailing, and execution to translate concepts into liveable environments.",
-    },
-    {
-      id: 6,
-      name: "Ruchika Bhurke",
-      role: "Admin & Operations Lead",
-      imageurl: "",
-      description:
-        "B.Com Bhavan's College · MBA Sales & Marketing, Welingkar · 30+ years · With firm since 2018. Manages client coordination, financial processes, and overall workflow.",
-    },
-    {
-      id: 7,
-      name: "Mamta Tiwari",
-      role: "Admin",
-      imageurl: "",
-      description:
-        "With firm since 2024. Supports day-to-day administrative operations and maintains efficient office functioning.",
-    },
-  ];
-
-  const members =
-    teamData.length > 0
-      ? teamData
-      : STATIC_TEAM.map((m) => ({ ...m, id: BigInt(m.id) } as any));
+  const members = teamData;
 
   return (
     <section className="max-w-7xl mx-auto mb-16">
@@ -620,7 +557,7 @@ export default function ClientAboutPage({
         <AchievementsSection />
         <AboutSection />
         <ServicesSection />
-        <TimelineSection />
+        {/*<TimelineSection />*/}
         <TeamSection teamData={teamData} />
       </div>
     </div>
