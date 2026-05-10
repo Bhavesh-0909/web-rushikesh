@@ -37,8 +37,8 @@ export const Projects = () => {
     fetchProjects();
   }, []);
 
-  const filteredProjects = activeCategory === 'All' 
-    ? projects 
+  const filteredProjects = activeCategory === 'All'
+    ? projects
     : projects.filter(p => p.category === activeCategory);
 
   const displayedProjects = filteredProjects;
@@ -46,14 +46,14 @@ export const Projects = () => {
   return (
     <section id="projects" className="relative pt-20 pb-12 bg-white/[0.02] backdrop-blur-[1px] text-brand-text z-20 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-5">
-         <motion.div 
+        <motion.div
           animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-20 left-[10%] text-brand-green"
         >
           <Briefcase size={120} />
         </motion.div>
-        <motion.div 
+        <motion.div
           animate={{ y: [0, 20, 0], rotate: [0, -15, 0] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           className="absolute bottom-40 right-[15%] text-brand-green"
@@ -69,16 +69,16 @@ export const Projects = () => {
             <span className="text-brand-green text-[10px] uppercase tracking-[0.4em] font-bold">Projects</span>
             <div className="h-[1px] w-12 bg-brand-border" />
           </div>
-          <h2 className="text-5xl md:text-8xl font-display font-medium tracking-tighter mb-12">HIGHLIGHT <span className="text-brand-green italic serif">WORKS</span></h2>
+          <h2 className="text-4xl md:text-6xl font-display font-medium tracking-tighter mb-12">HIGHLIGHT <span className="text-brand-green italic serif">WORKS</span></h2>
         </div>
         <div className="flex gap-4 justify-center flex-wrap">
           {['All', 'Residential', 'Commercial', 'Liaisoning'].map(cat => (
-            <button 
-              key={cat} 
+            <button
+              key={cat}
               onClick={() => setActiveCategory(cat)}
               className={cn(
                 "text-[9px] uppercase font-bold tracking-[0.2em] px-10 py-4 glass rounded-full transition-all cursor-none",
-                activeCategory === cat ? "bg-brand-green text-white" : "hover:bg-brand-green hover:text-white"
+                activeCategory === cat ? "bg-brand-green text-brand-green" : "hover:bg-brand-green hover:text-brand-green"
               )}
             >
               {cat}
@@ -87,9 +87,9 @@ export const Projects = () => {
         </div>
       </div>
 
-      <div className="px-6 md:px-24 columns-1 md:columns-2 lg:columns-3 gap-12 space-y-12">
+      <div className="px-6 md:px-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
         {displayedProjects.map((project, idx) => (
-          <motion.div 
+          <motion.div
             key={project.id}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -98,22 +98,19 @@ export const Projects = () => {
             className="group cursor-none break-inside-avoid bg-transparent border border-brand-border/30 rounded-[32px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 relative"
           >
             {isAdmin && (
-              <AdminEditControls 
-                isVisible={true} 
-                itemId={project.id} 
+              <AdminEditControls
+                isVisible={true}
+                itemId={project.id}
                 itemType="project"
                 onDelete={() => setProjects(prev => prev.filter(p => p.id !== project.id))}
               />
             )}
-            
+
             <Link href={`/project/${createSlug(project.title)}`}>
-              <div className={cn(
-                "overflow-hidden relative",
-                idx % 2 === 0 ? "aspect-[3/4]" : "aspect-[4/5]"
-              )}>
-                <img 
-                  src={project.hero_image || "/default-preview.png"} 
-                  alt={project.title} 
+              <div className="overflow-hidden relative h-[400px] md:h-[450px]">
+                <img
+                  src={project.hero_image || "/default-preview.png"}
+                  alt={project.title}
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                   loading="lazy"
                   decoding="async"
@@ -125,11 +122,11 @@ export const Projects = () => {
                 </div>
               </div>
               <div className="p-8">
-                 <div className="flex items-center justify-between mb-2">
-                   <h3 className="text-xl font-display font-medium tracking-tight uppercase">{project.title}</h3>
-                   <span className="text-[10px] uppercase tracking-widest text-brand-green font-bold px-3 py-1 bg-brand-green/5 rounded-full">{project.category}</span>
-                 </div>
-                 <p className="text-[10px] uppercase tracking-widest opacity-30">{project.location}</p>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xl font-display font-medium tracking-tight uppercase">{project.title}</h3>
+                  <span className="text-[10px] uppercase tracking-widest text-brand-green font-bold px-3 py-1 bg-brand-green/5 rounded-full">{project.category}</span>
+                </div>
+                <p className="text-[10px] uppercase tracking-widest opacity-30">{project.location}</p>
               </div>
             </Link>
           </motion.div>
@@ -137,9 +134,9 @@ export const Projects = () => {
       </div>
 
       <div className="mt-16 flex justify-center px-6 md:px-12">
-        <Link 
+        <Link
           href="/project"
-          className="w-full md:w-auto md:px-16 py-6 glass rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-brand-green hover:text-white transition-all cursor-none text-center"
+          className="w-full md:w-auto md:px-16 py-6 glass rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-brand-green hover:text-brand-green transition-all cursor-none text-center"
         >
           View All Projects
         </Link>

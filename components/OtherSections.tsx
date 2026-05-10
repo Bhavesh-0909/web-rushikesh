@@ -5,15 +5,15 @@ export const Stats = () => {
     <section className="relative py-12 md:py-16 px-6 md:px-24 border-y border-brand-border bg-transparent z-40">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0">
         <div className="flex flex-col items-center text-center">
-          <span className="text-brand-green font-display text-6xl md:text-8xl font-light tracking-tighter mb-4 italic">08+</span>
+          <span className="text-brand-green font-display text-5xl md:text-6xl font-light tracking-tighter mb-4 italic">08+</span>
           <span className="text-[10px] uppercase tracking-[0.4em] font-bold opacity-40">Years of Experience</span>
         </div>
         <div className="flex flex-col items-center text-center md:border-x md:border-brand-border">
-          <span className="text-brand-text font-display text-6xl md:text-8xl font-light tracking-tighter mb-4 italic">01M+</span>
+          <span className="text-brand-text font-display text-5xl md:text-6xl font-light tracking-tighter mb-4 italic">01M+</span>
           <span className="text-[10px] uppercase tracking-[0.4em] font-bold opacity-40">Total Built-up Area</span>
         </div>
         <div className="flex flex-col items-center text-center">
-          <span className="text-brand-sage font-display text-6xl md:text-8xl font-light tracking-tighter mb-4 italic">100+</span>
+          <span className="text-brand-sage font-display text-5xl md:text-6xl font-light tracking-tighter mb-4 italic">100+</span>
           <span className="text-[10px] uppercase tracking-[0.4em] font-bold opacity-40">Total Number of Clients</span>
         </div>
       </div>
@@ -115,7 +115,7 @@ export const Awards = () => {
               <div className="w-8 h-8 rounded-full border border-brand-green/30 flex items-center justify-center group-hover:scale-125 transition-transform">
                 <span className="text-brand-green text-lg">★</span>
               </div>
-              <span className="text-3xl md:text-4xl font-display font-light tracking-[0.1em] uppercase text-brand-text/80 group-hover:text-brand-green transition-colors italic">
+              <span className="text-2xl md:text-3xl font-medium tracking-tight font-display font-light tracking-[0.1em] uppercase text-brand-text/80 group-hover:text-brand-green transition-colors italic">
                 {award.name}
               </span>
             </div>

@@ -45,7 +45,7 @@ export const Instagram = () => {
               <div className="h-[1px] w-8 bg-brand-green" />
               <span className="text-brand-green text-[10px] uppercase tracking-[0.4em] font-bold">Social</span>
             </div>
-            <h2 className="text-4xl md:text-7xl font-display font-medium tracking-tighter uppercase">
+            <h2 className="text-4xl md:text-6xl font-display font-medium tracking-tighter uppercase">
               Follow Our <span className="text-brand-green italic">Journey</span>
             </h2>
           </div>

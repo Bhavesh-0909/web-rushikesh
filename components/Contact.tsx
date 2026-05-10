@@ -9,7 +9,7 @@ export const Contact = () => {
             <span className="text-brand-green text-[10px] uppercase tracking-[0.4em] font-bold">Contact</span>
             <div className="h-[1px] w-12 bg-brand-border" />
           </div>
-          <h2 className="text-4xl md:text-8xl font-display font-medium mb-12 md:mb-16 leading-[0.9] tracking-tighter">
+          <h2 className="text-4xl md:text-6xl font-display font-medium mb-12 md:mb-16 leading-[0.9] tracking-tighter">
             START YOUR <br/><span className="text-brand-sage italic serif">JOURNEY</span> WITH US.
           </h2>
           

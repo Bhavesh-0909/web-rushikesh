@@ -17,7 +17,7 @@ export const Team = () => {
             <span className="text-brand-green text-[10px] uppercase tracking-[0.4em] font-bold">The Collective</span>
             <div className="h-[1px] w-12 bg-brand-border" />
           </div>
-          <h2 className="text-5xl md:text-[120px] font-display font-medium tracking-tighter leading-[0.8] mb-12">
+          <h2 className="text-4xl md:text-6xl font-display font-medium tracking-tighter leading-[0.8] mb-12">
             LIVING THE <br />
             <span className="text-brand-green italic serif uppercase">DESIGN</span>
           </h2>
