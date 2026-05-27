@@ -102,7 +102,7 @@ export default async function JobPage({ params }: JobPageProps) {
                   Key Responsibilities
                 </h2>
                 <ul className="space-y-4">
-                  {job.responsibilities.map((req, idx) => (
+                  {job.responsibilities.map((req: any, idx: any) => (
                     <li key={idx} className="flex gap-4 text-brand-text/80 font-light leading-relaxed text-sm md:text-base">
                       <span className="text-brand-green mt-1.5">•</span>
                       <span>{req}</span>
@@ -119,7 +119,7 @@ export default async function JobPage({ params }: JobPageProps) {
                   Requirements
                 </h2>
                 <ul className="space-y-4">
-                  {job.requirements.map((req, idx) => (
+                  {job.requirements.map((req: any, idx: any) => (
                     <li key={idx} className="flex gap-4 text-brand-text/80 font-light leading-relaxed text-sm md:text-base">
                       <span className="text-brand-green mt-1.5">•</span>
                       <span>{req}</span>

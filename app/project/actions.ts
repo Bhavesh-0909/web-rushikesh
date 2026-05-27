@@ -10,7 +10,7 @@ export async function getProjects(): Promise<Project[]> {
       orderBy: { created_at: "desc" },
     })
 
-    return data.map((project) => ({
+    return data.map((project: any) => ({
       ...project,
       id: Number(project.id),
       created_at: project.created_at?.toISOString() || new Date().toISOString(),
@@ -33,7 +33,7 @@ export async function getRecentProjects(limit: number = 3): Promise<Project[]> {
       take: limit,
     })
 
-    return data.map((project) => ({
+    return data.map((project: any) => ({
       ...project,
       id: Number(project.id),
       created_at: project.created_at?.toISOString() || new Date().toISOString(),
@@ -56,11 +56,11 @@ export async function getProjectDetail(idParam: string): Promise<{ project: Proj
 
   if (!data?.length) return { project: null, relatedProjects: [] }
 
-  const project = data.find(p => createSlug(p.title) === idParam) ?? null
+  const project = data.find((p: any) => createSlug(p.title) === idParam) ?? null
 
   const relatedProjects = project
     ? data
-      .filter(p => p.id !== project.id && p.category === project.category)
+      .filter((p: any) => p.id !== project.id && p.category === project.category)
       .slice(0, 3)
     : []
 

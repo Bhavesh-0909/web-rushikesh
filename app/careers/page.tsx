@@ -50,7 +50,7 @@ export default async function CareersPage() {
         <div className="max-w-4xl mx-auto">
           {jobs.length > 0 ? (
             <div className="grid grid-cols-1 gap-6">
-              {jobs.map((job, idx) => (
+              {jobs.map((job: any, idx: any) => (
                 <Link 
                   href={`/careers/${job.id}`} 
                   key={job.id}

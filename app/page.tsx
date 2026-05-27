@@ -18,7 +18,7 @@ export default async function Home() {
     })
   ]);
 
-  const serializedProjects = projects.map((p) => ({
+  const serializedProjects = projects.map((p: any) => ({
     ...p,
     id: Number(p.id),
     created_at: p.created_at?.toISOString() || new Date().toISOString(),
@@ -28,14 +28,14 @@ export default async function Home() {
     architect: "Rushikesh",
   }));
 
-  const serializedTestimonials = testimonials.map((t) => ({
+  const serializedTestimonials = testimonials.map((t: any) => ({
     ...t,
     id: Number(t.id),
     created_at: t.created_at?.toISOString() || new Date().toISOString(),
     updated_at: t.updated_at?.toISOString() || new Date().toISOString(),
   }));
 
-  const serializedTeamMembers = teamMembers.map((t) => ({
+  const serializedTeamMembers = teamMembers.map((t: any) => ({
     ...t,
     id: Number(t.id),
     created_at: t.created_at?.toISOString() || new Date().toISOString(),

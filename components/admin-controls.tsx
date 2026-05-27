@@ -19,8 +19,22 @@ import {
   type Employee,
 } from "@/lib/supabase"
 import { toast } from "sonner"
-import { X, Plus, Edit, Trash2, MapPin, ExternalLink, Video as Youtube, Star, Award, BookOpen, BadgeCheck, Shield, Upload } from "lucide-react"
+import { X, Plus, Edit, Trash2, MapPin, ExternalLink, Video as Youtube, Star, Award, BookOpen, BadgeCheck, Shield, Upload, Calendar, Settings, DollarSign, UserCheck, UserX, CheckCircle, Trash, RefreshCw, AlertTriangle, Eye } from "lucide-react"
 import ImageUpload from "@/components/ImageUpload"
+import { Badge } from "@/components/ui/badge"
+import {
+  getAllProfiles,
+  updateProfileStatus,
+  toggleProfileDisabled,
+  getSalaryStructure,
+  updateSalaryStructure,
+  getAttendanceForAdmin,
+  adminMarkAttendance,
+  generateAllPayslipsForMonth,
+  addSalaryComponent
+} from "@/lib/employee-db"
+
+const getDaysInMonth = (year: number, month: number) => new Date(year, month, 0).getDate();
 
 interface AdminControlsProps {
   onDataUpdated?: () => void
@@ -39,6 +53,29 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
   const [instagramPosts, setInstagramPosts] = useState<InstagramPost[]>([])
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
+
+  // Employee Portal admin states
+  const [portalEmployees, setPortalEmployees] = useState<any[]>([])
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [activePortalSubTab, setActivePortalSubTab] = useState<"pending" | "employees" | "attendance" | "payslips">("employees")
+  const [selectedPortalEmployee, setSelectedPortalEmployee] = useState<any>(null)
+  const [salaryStructure, setSalaryStructure] = useState<any[]>([])
+  const [showSalaryStructureDialog, setShowSalaryStructureDialog] = useState(false)
+  
+  // Portal Attendance states
+  const [selectedPortalDate, setSelectedPortalDate] = useState<string>(new Date().toISOString().split("T")[0])
+  const [portalAttendance, setPortalAttendance] = useState<any[]>([])
+  
+  // Portal Payslips states
+  const [selectedPayslipMonth, setSelectedPayslipMonth] = useState<number>(new Date().getMonth() + 1)
+  const [selectedPayslipYear, setSelectedPayslipYear] = useState<number>(new Date().getFullYear())
+  const [generatingPayslips, setGeneratingPayslips] = useState(false)
+  
+  // Custom salary component form states
+  const [newComponentName, setNewComponentName] = useState("")
+  const [newComponentType, setNewComponentType] = useState<"earning" | "deduction">("earning")
+  const [newComponentAttendance, setNewComponentAttendance] = useState(false)
+  const [addingComponent, setAddingComponent] = useState(false)
 
   // Form states
   const [selectedItem, setSelectedItem] = useState<any>(null)
@@ -139,7 +176,142 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
 
   useEffect(() => {
     fetchAllData()
+    fetchPortalData()
   }, [])
+
+  const fetchPortalData = async () => {
+    setPortalLoading(true)
+    try {
+      const res = await getAllProfiles()
+      if (res.success && res.profiles) {
+        setPortalEmployees(res.profiles)
+      }
+      
+      // Fetch attendance for selected date
+      await fetchPortalAttendance(selectedPortalDate)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setPortalLoading(false)
+    }
+  }
+
+  const fetchPortalAttendance = async (dateStr: string) => {
+    const res = await getAttendanceForAdmin(dateStr)
+    if (res.success && res.records) {
+      setPortalAttendance(res.records)
+    }
+  }
+
+  const handlePortalStatusChange = async (profileId: number, status: "pending" | "approved" | "rejected") => {
+    const res = await updateProfileStatus(profileId, status)
+    if (res.success) {
+      toast.success(`Employee request ${status} successfully!`)
+      fetchPortalData()
+    } else {
+      toast.error(res.error || "Failed to update employee status.")
+    }
+  }
+
+  const handlePortalToggleDisabled = async (profileId: number, currentDisabled: boolean) => {
+    const res = await toggleProfileDisabled(profileId, !currentDisabled)
+    if (res.success) {
+      toast.success(`Employee access ${!currentDisabled ? "disabled" : "enabled"} successfully!`)
+      fetchPortalData()
+    } else {
+      toast.error(res.error || "Failed to update employee access.")
+    }
+  }
+
+  const handleOpenSalaryStructure = async (emp: any) => {
+    setSelectedPortalEmployee(emp)
+    const res = await getSalaryStructure(emp.id)
+    if (res.success && res.structure) {
+      setSalaryStructure(res.structure)
+      setShowSalaryStructureDialog(true)
+    } else {
+      toast.error("Failed to load employee salary structure.")
+    }
+  }
+
+  const handleSaveSalaryStructure = async () => {
+    if (!selectedPortalEmployee) return
+    
+    const updates = salaryStructure.map(comp => ({
+      componentId: comp.componentId,
+      amount: parseFloat(comp.amount) || 0
+    }))
+    
+    const res = await updateSalaryStructure(selectedPortalEmployee.id, updates)
+    if (res.success) {
+      toast.success("Salary structure saved successfully!")
+      setShowSalaryStructureDialog(false)
+    } else {
+      toast.error(res.error || "Failed to save salary structure.")
+    }
+  }
+
+  const handleAddNewComponent = async () => {
+    if (!newComponentName.trim()) {
+      toast.error("Please enter a component name.")
+      return
+    }
+
+    setAddingComponent(true)
+    try {
+      const res = await addSalaryComponent(
+        newComponentName.trim(),
+        newComponentType,
+        newComponentAttendance
+      )
+
+      if (res.success) {
+        toast.success(`Salary category "${newComponentName}" added successfully!`)
+        setNewComponentName("")
+        setNewComponentAttendance(false)
+        
+        // Refresh currently selected employee's salary structure (self-heals the dialog!)
+        if (selectedPortalEmployee) {
+          const structRes = await getSalaryStructure(selectedPortalEmployee.id)
+          if (structRes.success && structRes.structure) {
+            setSalaryStructure(structRes.structure)
+          }
+        }
+      } else {
+        toast.error(res.error || "Failed to create category.")
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred.")
+    } finally {
+      setAddingComponent(false)
+    }
+  }
+
+  const handleAdminMarkAttendance = async (empId: number, status: string) => {
+    const res = await adminMarkAttendance(empId, selectedPortalDate, status)
+    if (res.success) {
+      toast.success("Attendance updated successfully!")
+      fetchPortalAttendance(selectedPortalDate)
+    } else {
+      toast.error(res.error || "Failed to update attendance.")
+    }
+  }
+
+  const handleGeneratePayslips = async () => {
+    setGeneratingPayslips(true)
+    try {
+      const res = await generateAllPayslipsForMonth(selectedPayslipYear, selectedPayslipMonth)
+      if (res.success) {
+        toast.success(`Payslips generated successfully for ${selectedPayslipYear}-${String(selectedPayslipMonth).padStart(2, "0")}!`)
+      } else {
+        toast.error(res.error || "Failed to generate payslips.")
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred.")
+    } finally {
+      setGeneratingPayslips(false)
+    }
+  }
 
   const handlePasswordSubmit = () => {
     // Logic moved to entry page
@@ -1209,16 +1381,474 @@ export default function AdminControls({ onDataUpdated }: AdminControlsProps) {
           )}
         </TabsContent>
 
-        <TabsContent value="manage" className="space-y-4">
-          <div className="bg-white/50 backdrop-blur-sm border border-dashed border-brand-border rounded-3xl p-12 text-center">
-            <div className="bg-brand-green/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-brand-green" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">Manage Employees</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              Directory of all approved team members. This section is currently under development.
-            </p>
+        <TabsContent value="manage" className="space-y-6">
+          
+          {/* Sub Navigation Tabs */}
+          <div className="flex flex-wrap gap-2 border-b border-brand-border pb-4 mb-4">
+            <Button
+              variant={activePortalSubTab === "employees" ? "default" : "outline"}
+              onClick={() => setActivePortalSubTab("employees")}
+              className={`rounded-full px-5 text-xs ${activePortalSubTab === "employees" ? "bg-brand-green hover:bg-brand-green/90 text-white" : "border-brand-border hover:text-brand-green"}`}
+            >
+              Approved Employees ({portalEmployees.filter(e => e.approval_status === "approved").length})
+            </Button>
+            <Button
+              variant={activePortalSubTab === "pending" ? "default" : "outline"}
+              onClick={() => setActivePortalSubTab("pending")}
+              className={`rounded-full px-5 text-xs ${activePortalSubTab === "pending" ? "bg-brand-green hover:bg-brand-green/90 text-white" : "border-brand-border hover:text-brand-green"}`}
+            >
+              Pending Requests ({portalEmployees.filter(e => e.approval_status === "pending").length})
+            </Button>
+            <Button
+              variant={activePortalSubTab === "attendance" ? "default" : "outline"}
+              onClick={() => setActivePortalSubTab("attendance")}
+              className={`rounded-full px-5 text-xs ${activePortalSubTab === "attendance" ? "bg-brand-green hover:bg-brand-green/90 text-white" : "border-brand-border hover:text-brand-green"}`}
+            >
+              Attendance Board
+            </Button>
+            <Button
+              variant={activePortalSubTab === "payslips" ? "default" : "outline"}
+              onClick={() => setActivePortalSubTab("payslips")}
+              className={`rounded-full px-5 text-xs ${activePortalSubTab === "payslips" ? "bg-brand-green hover:bg-brand-green/90 text-white" : "border-brand-border hover:text-brand-green"}`}
+            >
+              Payslips Generator
+            </Button>
+            <Button
+              variant="outline"
+              onClick={fetchPortalData}
+              className="rounded-full px-4 text-xs border-brand-border text-gray-500 hover:text-brand-green ml-auto"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Reload Portal
+            </Button>
           </div>
+
+          {/* Sub Tab: APPROVED EMPLOYEES */}
+          {activePortalSubTab === "employees" && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-lg font-medium">Approved Portal Employees</h3>
+                <p className="text-xs text-gray-500">Configure salary structures and toggle portal access.</p>
+              </div>
+
+              {portalEmployees.filter(e => e.approval_status === "approved").length === 0 ? (
+                <div className="bg-white/50 border border-brand-border rounded-3xl p-12 text-center text-gray-500">
+                  No approved portal employees found. Go to "Pending Requests" to approve registered accounts.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {portalEmployees.filter(e => e.approval_status === "approved").map((emp) => (
+                    <Card key={emp.id} className="p-5 bg-white border border-brand-border hover:shadow-md transition-all rounded-2xl relative overflow-hidden">
+                      {emp.disabled && (
+                        <div className="absolute top-0 left-0 w-full h-1 bg-red-500" />
+                      )}
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-base">{emp.full_name}</h4>
+                            {emp.disabled ? (
+                              <span className="bg-red-50 text-red-700 text-[9px] font-bold px-2 py-0.5 rounded border border-red-200">Disabled</span>
+                            ) : (
+                              <span className="bg-emerald-50 text-emerald-700 text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-200">Active</span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1 font-mono">{emp.employee_id} &bull; {emp.role}</p>
+                          <p className="text-xs text-gray-400 mt-1">{emp.email} {emp.phone ? `| ${emp.phone}` : ""}</p>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleOpenSalaryStructure(emp)}
+                            className="bg-brand-green hover:bg-brand-green/90 text-white rounded-full text-xs"
+                          >
+                            <DollarSign className="h-3 w-3 mr-1" />
+                            Salary Structure
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handlePortalToggleDisabled(emp.id, emp.disabled)}
+                            className={`rounded-full text-xs border-brand-border ${emp.disabled ? "hover:bg-emerald-50 hover:text-emerald-700" : "hover:bg-red-50 hover:text-red-600"}`}
+                          >
+                            {emp.disabled ? (
+                              <>
+                                <UserCheck className="h-3 w-3 mr-1" />
+                                Enable Access
+                              </>
+                            ) : (
+                              <>
+                                <UserX className="h-3 w-3 mr-1" />
+                                Disable Access
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handlePortalStatusChange(emp.id, "pending")}
+                            className="rounded-full text-xs text-gray-500 border-brand-border hover:bg-gray-50"
+                          >
+                            Move back to Pending
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sub Tab: PENDING REQUESTS */}
+          {activePortalSubTab === "pending" && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-lg font-medium">Pending Signup Requests</h3>
+                <p className="text-xs text-gray-500">Approve or reject employee accounts waiting for access.</p>
+              </div>
+
+              {portalEmployees.filter(e => e.approval_status === "pending").length === 0 ? (
+                <div className="bg-white/50 border border-brand-border rounded-3xl p-12 text-center text-gray-400 text-sm">
+                  No pending employee registration requests found.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {portalEmployees.filter(e => e.approval_status === "pending").map((emp) => (
+                    <Card key={emp.id} className="p-5 bg-white border border-brand-border hover:shadow-md transition-all rounded-2xl">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                          <h4 className="font-semibold text-base">{emp.full_name}</h4>
+                          <p className="text-xs text-brand-green mt-1 font-bold">Requested Role: {emp.role}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Employee ID: <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[11px]">{emp.employee_id}</code> &bull; Email: {emp.email}
+                          </p>
+                          {emp.phone && <p className="text-xs text-gray-400 mt-0.5">Phone: {emp.phone}</p>}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => handlePortalStatusChange(emp.id, "approved")}
+                            className="bg-brand-green hover:bg-brand-green/90 text-white rounded-full text-xs h-10 px-5"
+                          >
+                            <UserCheck className="h-3.5 w-3.5 mr-1" />
+                            Approve
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => handlePortalStatusChange(emp.id, "rejected")}
+                            className="rounded-full text-xs h-10 px-5 text-red-600 border-brand-border hover:bg-red-50 hover:text-red-700"
+                          >
+                            <UserX className="h-3.5 w-3.5 mr-1" />
+                            Reject
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sub Tab: ATTENDANCE BOARD */}
+          {activePortalSubTab === "attendance" && (
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
+                <div>
+                  <h3 className="text-lg font-medium">Daily Attendance Board</h3>
+                  <p className="text-xs text-gray-500">Monitor and manually edit employee daily attendance logs.</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="adminDate" className="text-xs font-semibold text-gray-600 whitespace-nowrap">Selected Date:</Label>
+                  <Input
+                    id="adminDate"
+                    type="date"
+                    value={selectedPortalDate}
+                    onChange={(e) => {
+                      setSelectedPortalDate(e.target.value)
+                      fetchPortalAttendance(e.target.value)
+                    }}
+                    className="h-10 rounded-xl bg-white border-brand-border"
+                  />
+                </div>
+              </div>
+
+              {portalEmployees.filter(e => e.approval_status === "approved").length === 0 ? (
+                <div className="bg-white/50 border border-brand-border rounded-3xl p-12 text-center text-gray-400">
+                  No approved employees to show attendance for.
+                </div>
+              ) : (
+                <Card className="bg-white border border-brand-border rounded-3xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-brand-border bg-gray-50/50">
+                          <th className="p-4 font-semibold text-brand-text/50 uppercase tracking-wider">Employee</th>
+                          <th className="p-4 font-semibold text-brand-text/50 uppercase tracking-wider">Employee ID</th>
+                          <th className="p-4 font-semibold text-brand-text/50 uppercase tracking-wider">Status</th>
+                          <th className="p-4 font-semibold text-brand-text/50 uppercase tracking-wider">Check-in Time</th>
+                          <th className="p-4 font-semibold text-brand-text/50 uppercase tracking-wider text-right">Manual Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {portalEmployees.filter(e => e.approval_status === "approved").map((emp) => {
+                          const record = portalAttendance.find(r => r.employee_profile_id === emp.id)
+                          return (
+                            <tr key={emp.id} className="border-b border-brand-border hover:bg-gray-50/50 transition-colors">
+                              <td className="p-4">
+                                <span className="font-semibold text-brand-text block">{emp.full_name}</span>
+                                <span className="text-[10px] text-gray-400">{emp.role}</span>
+                              </td>
+                              <td className="p-4 font-mono text-gray-500">{emp.employee_id}</td>
+                              <td className="p-4">
+                                {record ? (
+                                  <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold border ${
+                                    record.status === "present"
+                                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                      : record.status === "late"
+                                      ? "bg-amber-50 text-amber-700 border-amber-200"
+                                      : "bg-red-50 text-red-700 border-red-200"
+                                  }`}>
+                                    {record.status}
+                                  </span>
+                                ) : (
+                                  <span className="bg-gray-50 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded border border-gray-200">Not Checked In (Absent)</span>
+                                )}
+                              </td>
+                              <td className="p-4 text-gray-500">
+                                {record ? new Date(record.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}
+                              </td>
+                              <td className="p-4 text-right">
+                                <Select
+                                  value={record ? record.status : "absent"}
+                                  onValueChange={(val) => handleAdminMarkAttendance(emp.id, val)}
+                                >
+                                  <SelectTrigger className="h-8 rounded-xl bg-white border-brand-border text-xs w-32 inline-flex">
+                                    <SelectValue placeholder="Action" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="present">Mark Present</SelectItem>
+                                    <SelectItem value="late">Mark Late</SelectItem>
+                                    <SelectItem value="half_day">Mark Half Day</SelectItem>
+                                    <SelectItem value="absent">Mark Absent</SelectItem>
+                                    {record && <SelectItem value="delete">Remove Log</SelectItem>}
+                                  </SelectContent>
+                                </Select>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </Card>
+              )}
+            </div>
+          )}
+
+          {/* Sub Tab: PAYSLIPS GENERATOR */}
+          {activePortalSubTab === "payslips" && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center mb-2">
+                <div>
+                  <h3 className="text-lg font-medium">Monthly Payslips Generator</h3>
+                  <p className="text-xs text-gray-500">Calculate and generate monthly payslips for all active approved employees.</p>
+                </div>
+              </div>
+
+              <Card className="bg-white border border-brand-border rounded-3xl p-6 md:p-8 max-w-xl">
+                <h4 className="font-semibold text-base mb-4 flex items-center gap-1.5">
+                  <Settings className="h-5 w-5 text-brand-green" />
+                  Select Billing Period
+                </h4>
+                <p className="text-xs text-gray-500 leading-relaxed mb-6">
+                  Select a month and year to generate/update payslips. This process calculates hours, incorporates attendance scaling for specific components (like Basic Salary and Travel Allowance), and applies fixed components/deductions for all approved employees.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <Label htmlFor="payMonth" className="text-xs font-semibold text-gray-600">Month</Label>
+                    <Select
+                      value={String(selectedPayslipMonth)}
+                      onValueChange={(val) => setSelectedPayslipMonth(parseInt(val))}
+                    >
+                      <SelectTrigger id="payMonth" className="h-11 rounded-xl bg-white border-brand-border mt-1">
+                        <SelectValue placeholder="Month" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                          <SelectItem key={m} value={String(m)}>
+                            {new Date(2000, m - 1, 1).toLocaleString('default', { month: 'long' })}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="payYear" className="text-xs font-semibold text-gray-600">Year</Label>
+                    <Select
+                      value={String(selectedPayslipYear)}
+                      onValueChange={(val) => setSelectedPayslipYear(parseInt(val))}
+                    >
+                      <SelectTrigger id="payYear" className="h-11 rounded-xl bg-white border-brand-border mt-1">
+                        <SelectValue placeholder="Year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[2024, 2025, 2026, 2027].map((y) => (
+                          <SelectItem key={y} value={String(y)}>
+                            {y}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="bg-brand-green/5 border border-brand-green/10 rounded-2xl p-4 text-xs text-brand-green mb-6 flex gap-3">
+                  <AlertTriangle className="h-5 w-5 shrink-0 text-brand-green" />
+                  <div>
+                    <span className="font-semibold block mb-0.5">Automated Calculation Scale</span>
+                    Payslip formulas automatically retrieve total present logs (treating half days as 0.5 present) and divide them by the actual days in the selected month ({getDaysInMonth(selectedPayslipYear, selectedPayslipMonth)} calendar days).
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleGeneratePayslips}
+                  disabled={generatingPayslips || portalEmployees.filter(e => e.approval_status === "approved").length === 0}
+                  className="w-full h-12 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white flex items-center justify-center gap-2"
+                >
+                  {generatingPayslips ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                      Generating Payslips...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Generate Payslips for {new Date(2000, selectedPayslipMonth - 1, 1).toLocaleString('default', { month: 'short' })} {selectedPayslipYear}
+                    </>
+                  )}
+                </Button>
+              </Card>
+            </div>
+          )}
+
+          {/* EDIT SALARY STRUCTURE DIALOG */}
+          <Dialog open={showSalaryStructureDialog} onOpenChange={setShowSalaryStructureDialog}>
+            <DialogContent className="max-w-md rounded-3xl p-6 bg-white/95 backdrop-blur-md">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold uppercase tracking-tight text-brand-text">
+                  Salary Structure: <span className="text-brand-green italic">{selectedPortalEmployee?.full_name}</span>
+                </DialogTitle>
+                <p className="text-xs text-gray-500">Configure base salary components and deductions.</p>
+              </DialogHeader>
+              <div className="space-y-4 my-4 max-h-[250px] overflow-y-auto pr-2" data-lenis-prevent="true">
+                {salaryStructure.length === 0 ? (
+                  <p className="text-center text-xs text-gray-400">No components seeded yet.</p>
+                ) : (
+                  salaryStructure.map((comp, idx) => (
+                    <div key={comp.id || idx} className="space-y-1 pb-3 border-b border-gray-100 last:border-b-0">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                          {comp.name}
+                          <Badge variant="outline" className={`text-[8px] px-1 py-0.2 ${comp.type === "earning" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-red-50 text-red-700 border-red-100"}`}>
+                            {comp.type}
+                          </Badge>
+                        </Label>
+                        <span className="text-[10px] text-gray-400">
+                          {comp.attendanceBased ? "Attendance scaling" : "Fixed component"}
+                        </span>
+                      </div>
+                      <div className="relative">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">₹</span>
+                        <Input
+                          type="number"
+                          value={comp.amount}
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value) || 0
+                            setSalaryStructure(prev => prev.map((item, i) => i === idx ? { ...item, amount: val } : item))
+                          }}
+                          className="pl-7 h-10 rounded-xl bg-white border-brand-border text-xs font-semibold"
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Add Custom Salary Category Section */}
+              <div className="border-t pt-4 mt-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-brand-green mb-3 flex items-center gap-1">
+                  <Plus className="h-3.5 w-3.5" />
+                  Add Custom Category
+                </h4>
+                <div className="space-y-3 bg-gray-50/70 p-3 rounded-2xl border border-gray-100">
+                  <div>
+                    <Label htmlFor="newCompName" className="text-[10px] font-semibold text-gray-500">Category Name *</Label>
+                    <Input
+                      id="newCompName"
+                      placeholder="e.g. Medical Allowance"
+                      value={newComponentName}
+                      onChange={(e) => setNewComponentName(e.target.value)}
+                      className="h-8 rounded-xl bg-white border-brand-border text-xs mt-1"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Select
+                        value={newComponentType}
+                        onValueChange={(val: "earning" | "deduction") => setNewComponentType(val)}
+                      >
+                        <SelectTrigger className="h-8 rounded-xl bg-white border-brand-border text-xs w-full">
+                          <SelectValue placeholder="Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="earning">Earning</SelectItem>
+                          <SelectItem value="deduction">Deduction</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-2 pl-2">
+                      <Checkbox
+                        id="newCompAttendance"
+                        checked={newComponentAttendance}
+                        onCheckedChange={(checked) => setNewComponentAttendance(!!checked)}
+                      />
+                      <Label htmlFor="newCompAttendance" className="text-[10px] font-semibold text-gray-600 cursor-none select-none">
+                        Attendance scaled
+                      </Label>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleAddNewComponent}
+                    disabled={addingComponent}
+                    size="sm"
+                    className="w-full bg-brand-green hover:bg-brand-green/90 text-white rounded-full text-xs h-8"
+                  >
+                    {addingComponent ? "Adding Category..." : "Create Category"}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4 border-t mt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowSalaryStructureDialog(false)}
+                  className="rounded-full text-xs h-10 px-5 border-brand-border hover:bg-gray-50"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSaveSalaryStructure}
+                  className="bg-brand-green hover:bg-brand-green/90 text-white rounded-full text-xs h-10 px-6"
+                >
+                  Save Structure
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
         </TabsContent>
       </Tabs>
     </div>

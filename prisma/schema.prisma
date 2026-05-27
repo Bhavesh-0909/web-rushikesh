@@ -104,3 +104,77 @@ model employees {
   created_at  DateTime? @default(now()) @db.Timestamptz(6)
   updated_at  DateTime? @default(now()) @db.Timestamptz(6)
 }
+
+model employee_profiles {
+  id                Int       @id @default(autoincrement())
+  auth_user_id      String    @unique @db.Uuid
+  full_name         String
+  email             String
+  phone             String?
+  employee_id       String    @unique
+  role              String
+  approval_status   String    @default("pending")
+  disabled          Boolean   @default(false)
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @default(now()) @db.Timestamptz(6)
+  salary_structures employee_salary_structure[]
+  attendance        attendance_records[]
+  payslips          payslips[]
+}
+
+model salary_components {
+  id                Int       @id @default(autoincrement())
+  name              String    @unique
+  type              String
+  attendance_based  Boolean   @default(false)
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
+  salary_structures employee_salary_structure[]
+}
+
+model employee_salary_structure {
+  id                  Int               @id @default(autoincrement())
+  employee_profile_id Int
+  component_id        Int
+  amount              Decimal           @db.Decimal(12, 2)
+  created_at          DateTime?         @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?         @default(now()) @db.Timestamptz(6)
+  employee_profile    employee_profiles @relation(fields: [employee_profile_id], references: [id], onDelete: Cascade)
+  salary_component    salary_components @relation(fields: [component_id], references: [id], onDelete: Cascade)
+  @@unique([employee_profile_id, component_id])
+}
+
+model attendance_records {
+  id                  Int               @id @default(autoincrement())
+  employee_profile_id Int
+  date                DateTime          @db.Date
+  check_in_time       DateTime          @default(now()) @db.Timestamptz(6)
+  status              String            @default("present")
+  created_at          DateTime?         @default(now()) @db.Timestamptz(6)
+  employee_profile    employee_profiles @relation(fields: [employee_profile_id], references: [id], onDelete: Cascade)
+  @@unique([employee_profile_id, date])
+}
+
+model payslips {
+  id                  Int               @id @default(autoincrement())
+  employee_profile_id Int
+  month               String
+  basic_salary        Decimal           @db.Decimal(12, 2)
+  hra                 Decimal           @db.Decimal(12, 2)
+  travel_allowance    Decimal           @db.Decimal(12, 2)
+  bonus               Decimal           @db.Decimal(12, 2)
+  pf_deduction        Decimal           @db.Decimal(12, 2)
+  tax_deduction       Decimal           @db.Decimal(12, 2)
+  other_earnings      Decimal           @db.Decimal(12, 2)
+  other_deductions    Decimal           @db.Decimal(12, 2)
+  custom_components   Json              @default("{}")
+  total_present_days  Int
+  total_working_days  Int
+  gross_salary        Decimal           @db.Decimal(12, 2)
+  total_deductions    Decimal           @db.Decimal(12, 2)
+  net_salary          Decimal           @db.Decimal(12, 2)
+  created_at          DateTime?         @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?         @default(now()) @db.Timestamptz(6)
+  employee_profile    employee_profiles @relation(fields: [employee_profile_id], references: [id], onDelete: Cascade)
+  @@unique([employee_profile_id, month])
+}
+
