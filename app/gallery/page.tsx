@@ -3,7 +3,7 @@ import StudioClient from './StudioClient'
 
 export default async function Page() {
   const images = await prisma.gallery.findMany()
-  const studioImages = images.map((item) => item.image)
+  const studioImages = images.map((item: any) => item.image)
 
   return <StudioClient studioImages={studioImages} />
 }

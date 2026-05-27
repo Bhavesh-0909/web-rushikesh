@@ -9,7 +9,7 @@ export async function getJobs() {
       orderBy: { created_at: "desc" },
     })
 
-    return data.map(job => ({
+    return data.map((job: any) => ({
       ...job,
       id: Number(job.id),
       created_at: job.created_at?.toISOString() || new Date().toISOString(),
