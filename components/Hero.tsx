@@ -37,7 +37,7 @@ export function Hero() {
           className="mt-8 flex flex-col sm:flex-row gap-4 md:gap-8 pointer-events-auto"
         >
           <motion.a
-            href="#projects"
+            href="/project"
             whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="group flex items-center justify-center gap-3 text-[9px] md:text-[11px] uppercase tracking-[0.2em] md:tracking-[0.25em] font-black cursor-pointer bg-[#28977b] text-white px-6 md:px-8 py-3 md:py-4 rounded-full shadow-[0_15px_40px_rgba(40,151,123,0.15)] border border-[#28977b]/20"
@@ -47,7 +47,7 @@ export function Hero() {
           </motion.a>
 
           <motion.a
-            href="#contact"
+            href="/contact"
             whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="group flex items-center justify-center gap-3 text-[9px] md:text-[11px] uppercase tracking-[0.2em] md:tracking-[0.25em] font-black cursor-pointer bg-black text-white px-6 md:px-8 py-3 md:py-4 rounded-full shadow-xl border border-white/10"
